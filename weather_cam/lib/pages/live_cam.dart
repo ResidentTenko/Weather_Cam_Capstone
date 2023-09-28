@@ -25,33 +25,35 @@ class LiveCamPage extends StatelessWidget {
           elevation: 0,
           iconTheme: const IconThemeData(color: Color(0xff955cd1), size: 40),
         ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const SizedBox(height: 40),
-              _buildButton(
-                  context,
-                  "https://www.earthcam.com/usa/newyork/timessquare/?cam=tsrobo1",
-                  'Times Square'),
-              const SizedBox(height: 40),
-              _buildButton(
-                  context,
-                  "https://www.earthcam.com/usa/newyork/worldtradecenter/?cam=skyline_g",
-                  'World Trade Center'),
-              const SizedBox(height: 40),
-              _buildButton(
-                  context,
-                  "https://www.earthcam.com/usa/newyork/rockefellercenter/?cam=rockefellerobservatory",
-                  'Rockefeller Observatory'),
-              const SizedBox(height: 40),
-              _buildButton(
-                  context,
-                  "https://www.earthcam.com/usa/newyork/statueofliberty/?cam=liberty_str",
-                  'Statue of Liberty'),
-              const SizedBox(height: 40),
-              _buildButton(context, "https://www.earthcam.com", '. . . '),
-            ],
+        body: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const SizedBox(height: 40),
+                _buildButton(
+                    context,
+                    "https://www.earthcam.com/usa/newyork/timessquare/?cam=tsrobo1",
+                    'Times Square'),
+                const SizedBox(height: 40),
+                _buildButton(
+                    context,
+                    "https://www.earthcam.com/usa/newyork/worldtradecenter/?cam=skyline_g",
+                    'World Trade Center'),
+                const SizedBox(height: 40),
+                _buildButton(
+                    context,
+                    "https://www.earthcam.com/usa/newyork/rockefellercenter/?cam=rockefellerobservatory",
+                    'Rockefeller Observatory'),
+                const SizedBox(height: 40),
+                _buildButton(
+                    context,
+                    "https://www.earthcam.com/usa/newyork/statueofliberty/?cam=liberty_str",
+                    'Statue of Liberty'),
+                const SizedBox(height: 40),
+                _buildButton(context, "https://www.earthcam.com", '. . . '),
+              ],
+            ),
           ),
         ),
       ),
