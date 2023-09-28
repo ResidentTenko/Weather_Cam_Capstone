@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:my_capstone_weather/pages/home_page_scaffold.dart';
+import 'package:my_capstone_weather/pages/home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
