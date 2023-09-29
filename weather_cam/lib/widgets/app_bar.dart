@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_capstone_weather/pages/live_cam.dart';
+import 'package:my_capstone_weather/pages/live_cam_select.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
@@ -28,7 +28,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const LiveCamPage(), // Return the  LiveCamPage
+        builder: (context) => const LiveCamSelect(), // Return the  LiveCamPage
       ),
     );
   }

@@ -1,16 +1,14 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 
-class ThreeDaysForecast extends StatelessWidget {
-  final String date;
-  final String temperature;
-  final String imageUrl;
+class SelectLiveCamButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  final String title;
 
-  const ThreeDaysForecast({
+  const SelectLiveCamButton({
     Key? key,
-    required this.date,
-    required this.temperature,
-    required this.imageUrl,
+    required this.onPressed,
+    required this.title,
   }) : super(key: key);
 
   @override
@@ -34,22 +32,17 @@ class ThreeDaysForecast extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        children: [
-          Text(
-            date,
-            style: const TextStyle(
-                color: Colors.white, fontSize: 20, fontFamily: 'MavenPro'),
+      child: TextButton(
+        onPressed: () {
+          onPressed();
+        },
+        child: Text(
+          title,
+          style: const TextStyle(
+            color: Colors.yellow,
+            fontSize: 20,
           ),
-          Image.network(
-            imageUrl, // Use the imageUrl to load the image from a network URL
-          ),
-          Text(
-            temperature,
-            style: const TextStyle(
-                color: Colors.white, fontSize: 20, fontFamily: 'MavenPro'),
-          ),
-        ],
+        ),
       ),
     );
   }

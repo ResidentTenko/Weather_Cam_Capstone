@@ -146,19 +146,22 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               ThreeDaysForecast(
                                 date: state.weather.forecast[0].forecastDay,
-                                icon: Icons.sunny,
+                                imageUrl:
+                                    'https:${state.weather.forecast[0].icon}',
                                 temperature:
                                     '${state.weather.forecast[0].maxTemp}°',
                               ),
                               ThreeDaysForecast(
                                 date: state.weather.forecast[1].forecastDay,
-                                icon: Icons.cloud,
+                                imageUrl:
+                                    'https:${state.weather.forecast[1].icon}',
                                 temperature:
                                     '${state.weather.forecast[1].maxTemp}°',
                               ),
                               ThreeDaysForecast(
                                 date: state.weather.forecast[2].forecastDay,
-                                icon: Icons.cloud,
+                                imageUrl:
+                                    'https:${state.weather.forecast[2].icon}',
                                 temperature:
                                     '${state.weather.forecast[2].maxTemp}°',
                               ),
