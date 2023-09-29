@@ -1,6 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:equatable/equatable.dart';
-
 import 'package:my_capstone_weather/models/forecast.dart';
 
 class Weather extends Equatable {
@@ -14,7 +13,7 @@ class Weather extends Equatable {
   // never replace the icon with forecast icon - forecast current condition is not always the same as actual condition
   final String icon;
   final List<Forecast> forecast;
-  final DateTime lastUpdated;
+  final DateTime date;
 
   const Weather({
     required this.name,
@@ -26,7 +25,7 @@ class Weather extends Equatable {
     required this.feelsLike,
     required this.icon,
     required this.forecast,
-    required this.lastUpdated,
+    required this.date,
   });
 
   // second default constructor
@@ -41,7 +40,7 @@ class Weather extends Equatable {
       feelsLike: 300.0,
       icon: 'No Icon',
       forecast: const [],
-      lastUpdated: DateTime(2000),
+      date: DateTime.now(),
     );
   }
 
@@ -66,14 +65,16 @@ class Weather extends Equatable {
       minTemp: forecastday_0['day']['mintemp_f'],
       feelsLike: current['feelslike_f'],
       icon: current['condition']['icon'],
-      lastUpdated: DateTime.now(),
+      date: DateTime.fromMillisecondsSinceEpoch(
+        forecastday_0['date_epoch'] * 1000,
+        isUtc: true,
+      ),
       // map each forecast item to a Forecast object
       forecast: forecastList.map((forecastItem) {
         return Forecast.fromJson(forecastItem as Map<String, dynamic>);
       }).toList(), // then create a list of forecast objects
     );
   }
-
 
   @override
   List<Object> get props {
@@ -87,13 +88,13 @@ class Weather extends Equatable {
       feelsLike,
       icon,
       forecast,
-      lastUpdated,
+      date,
     ];
   }
 
   @override
   String toString() {
-    return 'Weather(name: $name, country: $country, condition: $condition, temp: $temp, maxTemp: $maxTemp, minTemp: $minTemp, feelsLike: $feelsLike, icon: $icon, \n forecast: $forecast, lastUpdated: $lastUpdated)';
+    return 'Weather(name: $name, country: $country, condition: $condition, temp: $temp, maxTemp: $maxTemp, minTemp: $minTemp, feelsLike: $feelsLike, icon: $icon, \n forecast: $forecast, date: $date)';
   }
 
   Weather copyWith({
@@ -106,7 +107,7 @@ class Weather extends Equatable {
     double? feelsLike,
     String? icon,
     List<Forecast>? forecast,
-    DateTime? lastUpdated,
+    DateTime? date,
   }) {
     return Weather(
       name: name ?? this.name,
@@ -118,7 +119,7 @@ class Weather extends Equatable {
       feelsLike: feelsLike ?? this.feelsLike,
       icon: icon ?? this.icon,
       forecast: forecast ?? this.forecast,
-      lastUpdated: lastUpdated ?? this.lastUpdated,
+      date: date ?? this.date,
     );
   }
 }

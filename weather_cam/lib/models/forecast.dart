@@ -32,8 +32,10 @@ class Forecast extends Equatable {
       minTemp: json['day']['mintemp_f'],
       icon: json['day']['condition']['icon'],
       forecastDay: DateFormat('E').format(
-        DateTime.fromMillisecondsSinceEpoch(json['date_epoch'] * 1000,
-            isUtc: true),
+        DateTime.fromMillisecondsSinceEpoch(
+          json['date_epoch'] * 1000,
+          isUtc: true,
+        ),
       ),
     );
   }

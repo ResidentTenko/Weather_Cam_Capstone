@@ -135,7 +135,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           const SizedBox(height: 20),
                           Text(
-                            "${DateFormat('E').format(state.weather.lastUpdated)}                 ${DateFormat('MMMd').format(state.weather.lastUpdated)}",
+                            "${DateFormat('E').format(state.weather.date)}                 ${DateFormat('MMMd').format(state.weather.date)}",
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
