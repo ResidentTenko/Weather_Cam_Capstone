@@ -74,6 +74,7 @@ class Weather extends Equatable {
     );
   }
 
+
   @override
   List<Object> get props {
     return [

@@ -12,6 +12,7 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
   LocationBloc() : super(LocationState.initial()) {
     on<FetchLocationEvent>(_fetchPosition);
   }
+
   Future<void> _fetchPosition(
     FetchLocationEvent event,
     Emitter<LocationState> emit,
@@ -19,7 +20,10 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
     // print the current state
     print("Location State Before Emit: $state");
     // change the state to loading before the try
-    emit(state.copyWith(status: LocationStatus.loading));
+    emit(
+      state.copyWith(status: LocationStatus.loading),
+    );
+    
     try {
       // get the location
       final LocationServices locationServices = LocationServices();

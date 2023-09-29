@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'location_bloc.dart';
 
 // lists the state of our location status
@@ -31,10 +32,11 @@ class LocationState extends Equatable {
   }
 
   @override
+  List<Object> get props => [longitude, latitude, status, error];
+
+  @override
   String toString() =>
       'LocationState(status: $status, latitude: $latitude, longitude: $longitude)';
-
-
 
   LocationState copyWith({
     double? longitude,
@@ -49,7 +51,4 @@ class LocationState extends Equatable {
       error: error ?? this.error,
     );
   }
-
-  @override
-  List<Object> get props => [longitude, latitude, status, error];
 }

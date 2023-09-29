@@ -12,6 +12,7 @@ abstract class WeatherEvent extends Equatable {
 // this means when the app starts up and provides location data and when the user selects a city of choice
 class FetchWeatherEvent extends WeatherEvent {
   final String inputQuery;
+
   const FetchWeatherEvent({
     required this.inputQuery,
   });

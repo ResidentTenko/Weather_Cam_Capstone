@@ -21,7 +21,7 @@ class WeatherState extends Equatable {
 
   factory WeatherState.initial() {
     return WeatherState(
-      status: WeatherStatus.loading,
+      status: WeatherStatus.initial,
       weather: Weather.initial(),
       error: const CustomError(),
     );
