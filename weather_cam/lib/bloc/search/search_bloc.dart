@@ -1,15 +1,20 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 // ignore_for_file: avoid_print
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+
+import 'package:my_capstone_weather/errors/generic_error.dart';
 import 'package:my_capstone_weather/models/city_model.dart';
-import 'package:my_capstone_weather/models/custom_error.dart';
-import 'package:my_capstone_weather/services/weather_api_services.dart';
+import 'package:my_capstone_weather/services/api_weather_services.dart';
 
 part 'search_event.dart';
 part 'search_state.dart';
 
 class SearchBloc extends Bloc<SearchEvent, SearchState> {
-  SearchBloc() : super(SearchState.initial()) {
+  final ApiWeatherServices apiWeatherServices;
+  SearchBloc({
+    required this.apiWeatherServices,
+  }) : super(SearchState.initial()) {
     on<FetchCityListEvent>(_fetchCities);
   }
   Future<void> _fetchCities(
@@ -23,11 +28,8 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     // try to load the city list
     try {
       print("City List State Before Emit: $state");
-      // get a weather API services instance
-      final WeatherApiServices weatherApiServices = WeatherApiServices();
-      // use that to get the weather information
       final List<City> cities =
-          await weatherApiServices.getCities(event.cityQuery);
+          await apiWeatherServices.getCitiesFromAPi(event.cityQuery);
       // load the weather into the state and emit it
       emit(
         state.copyWith(
@@ -36,8 +38,15 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         ),
       );
       print("Weather State After Emit: $state");
-    } on CustomError catch (e) {
-      emit(state.copyWith(status: SearchStatus.error, error: e));
+    }
+    // handle our exceptions and errors
+    on GenericError catch (e) {
+      emit(
+        state.copyWith(
+          status: SearchStatus.error,
+          error: e.toString(),
+        ),
+      );
     }
   }
 }

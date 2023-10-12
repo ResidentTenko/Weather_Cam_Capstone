@@ -11,7 +11,7 @@ enum SearchStatus {
 class SearchState extends Equatable {
   final SearchStatus status;
   final List<City> cities;
-  final CustomError error;
+  final String error;
 
   const SearchState({
     required this.status,
@@ -23,7 +23,7 @@ class SearchState extends Equatable {
     return const SearchState(
       status: SearchStatus.initial,
       cities: [],
-      error: CustomError(),
+      error: "No Errors",
     );
   }
 
@@ -42,7 +42,7 @@ class SearchState extends Equatable {
   SearchState copyWith({
     SearchStatus? status,
     List<City>? cities,
-    CustomError? error,
+    String? error,
   }) {
     return SearchState(
       status: status ?? this.status,

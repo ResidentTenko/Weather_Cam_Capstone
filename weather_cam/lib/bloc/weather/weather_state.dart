@@ -8,10 +8,11 @@ enum WeatherStatus {
   error,
 }
 
+// we make error dynamic to handle different types of exceptions
 class WeatherState extends Equatable {
   final WeatherStatus status;
   final Weather weather;
-  final CustomError error;
+  final GenericError error;
 
   const WeatherState({
     required this.status,
@@ -23,7 +24,7 @@ class WeatherState extends Equatable {
     return WeatherState(
       status: WeatherStatus.initial,
       weather: Weather.initial(),
-      error: const CustomError(),
+      error: const GenericError(message: "No Errors"),
     );
   }
 
@@ -41,7 +42,7 @@ class WeatherState extends Equatable {
   WeatherState copyWith({
     WeatherStatus? status,
     Weather? weather,
-    CustomError? error,
+    GenericError? error,
   }) {
     return WeatherState(
       status: status ?? this.status,

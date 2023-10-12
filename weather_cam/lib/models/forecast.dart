@@ -40,6 +40,17 @@ class Forecast extends Equatable {
     );
   }
 
+  // convert our forecast model back to Json
+  // The return is a map with String keys and dynamic values 
+  Map<String, dynamic> toJson() {
+    return {
+      'maxTemp': maxTemp,
+      'minTemp': minTemp,
+      'icon': icon,
+      'forecastDay': forecastDay,
+    };
+  }
+
   @override
   List<Object> get props => [maxTemp, minTemp, icon];
 

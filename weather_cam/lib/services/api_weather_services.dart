@@ -1,17 +1,19 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first, avoid_print
 import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:my_capstone_weather/errors/generic_error.dart';
+import 'package:my_capstone_weather/errors/http_error_status_exception.dart';
+import 'package:my_capstone_weather/errors/weather_api_exception.dart';
 import 'package:my_capstone_weather/models/city_model.dart';
 import 'package:my_capstone_weather/models/weather.dart';
-import 'package:my_capstone_weather/services/http_error_handler.dart';
 
-class WeatherApiServices {
+class ApiWeatherServices {
+  final http.Client httpClient;
+  // constructor
+  ApiWeatherServices({required this.httpClient});
   // takes a string and returns a weather type object wrapped in a future
-  Future<Weather> getWeather(String inputQuery) async {
-    // create http.client object
-    http.Client httpClient = http.Client();
+  Future<Weather> getWeatherFromApi(String inputQuery) async {
     // use a uri object instead of a direct url
     final Uri uri = Uri(
       // we're basically building the url piece by piece
@@ -30,12 +32,23 @@ class WeatherApiServices {
       // retrieve a response body from the uri
       final http.Response response = await httpClient.get(uri);
 
-      // throw error message if get request fails
+      // create and throw a http error status exception object
+      // we will handle this at a higher level
       if (response.statusCode != 200) {
-        throw httpErrorHandler(response);
+        throw HttpErrorStatusException(
+          responseMessage:
+              'HttpErrorStatusException\nStatus Code: ${response.statusCode}\nResponse Message: ${response.reasonPhrase}',
+        );
       }
       // else - decode the response
       final responseBody = json.decode(response.body);
+
+      // handle this weather exception at the calling level - bloc level
+      if (responseBody.isEmpty) {
+        throw WeatherApiException(
+            message:
+                'WeatherApiException: Cannot get the weather information of: $inputQuery');
+      }
 
       // feed the response bodyto our weather object and build a weather object
       final Weather weather = Weather.fromJson(responseBody);
@@ -43,15 +56,13 @@ class WeatherApiServices {
       // return our weather object
       return weather;
     } catch (e) {
-      // throw any other type of errors back to the calling side without any special handling
-      // pass it up to a higher level of the program where it can be dealt with more appropriately or where it makes sense to handle the exception.
-      rethrow;
+      // catch all exceptions (those written in the try block and those not accounted for)
+      // we will convert all errors to a generic error
+      throw GenericError(message: e);
     }
   }
 
-  Future<List<City>> getCities(String inputQuery) async {
-    // create http.client object
-    http.Client httpClient = http.Client();
+  Future<List<City>> getCitiesFromAPi(String inputQuery) async {
     // use a uri object instead of a direct url
     final Uri uri = Uri(
       // we're basically building the url piece by piece
@@ -67,12 +78,23 @@ class WeatherApiServices {
       // retrieve a response body from the uri
       final http.Response response = await httpClient.get(uri);
 
-      // throw error message if get request fails
+      // create and throw a http error status exception object
+      // we will handle this at a higher level
       if (response.statusCode != 200) {
-        throw httpErrorHandler(response);
+        throw HttpErrorStatusException(
+          responseMessage:
+              'HttpErrorStatusException\nStatus Code: ${response.statusCode}\nResponse Message: ${response.reasonPhrase}',
+        );
       }
       // else - decode the response
       final List<dynamic> responseBody = json.decode(response.body);
+
+      // handle this weather exception at the calling level - bloc level
+      if (responseBody.isEmpty) {
+        throw WeatherApiException(
+            message:
+                'WeatherApiException: Cannot get the list of cities for: $inputQuery');
+      }
 
       // build a list of cities from our response body
       final List<City> cities = responseBody
@@ -82,7 +104,9 @@ class WeatherApiServices {
       // return our list of city objects
       return cities;
     } catch (e) {
-      rethrow;
+      // catch all exceptions (those written in the try block and those not accounted for)
+      // we will convert all errors to a generic error
+      throw GenericError(message: e);
     }
   }
 }

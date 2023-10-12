@@ -1,0 +1,4 @@
+To see if my app works with firebase
+The first thing I should do is run the regular location - get weather
+Then edit that to store in firebase
+See if that is created in firebase

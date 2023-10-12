@@ -1,18 +1,63 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 // ignore_for_file: avoid_print
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:my_capstone_weather/models/custom_error.dart';
+import 'package:geolocator/geolocator.dart';
+
+import 'package:my_capstone_weather/errors/generic_error.dart';
 import 'package:my_capstone_weather/models/weather.dart';
-import 'package:my_capstone_weather/services/weather_api_services.dart';
+import 'package:my_capstone_weather/repositories/weather_respository.dart';
+import 'package:my_capstone_weather/services/location_services.dart';
 
 part 'weather_event.dart';
 part 'weather_state.dart';
 
 class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
-  WeatherBloc() : super(WeatherState.initial()) {
+  // weatherbloc needs to call the weather repository API whenever a fetch weather event occurs
+  final ApiWeatherRepository apiWeatherRepository;
+  // we will provide an instance of weather repository through the constructor
+  WeatherBloc({
+    required this.apiWeatherRepository,
+  }) : super(WeatherState.initial()) {
     on<FetchWeatherEvent>(_fetchWeather);
+    on<FetchWeatherByLocationEvent>(_fetchWeatherByLocation);
   }
+
+  Future<void> _fetchWeatherByLocation(
+    FetchWeatherByLocationEvent event,
+    Emitter<WeatherState> emit,
+  ) async {
+    // the next state after initial should be loading
+    emit(
+      state.copyWith(status: WeatherStatus.loading),
+    );
+    // try to load the weather information
+    try {
+      print("Weather State Before Emit: $state");
+      final LocationServices locationServices = LocationServices();
+      final Position position = await locationServices.getCurrentPosition();
+      final Weather weather = await apiWeatherRepository
+          .setWeather('${position.latitude}, ${position.longitude}');
+      // load the weather into the state and emit it
+      emit(
+        state.copyWith(
+          status: WeatherStatus.loaded,
+          weather: weather,
+        ),
+      );
+      print("Weather State After Emit: $state");
+      // handle our exceptions and errors
+    } on GenericError catch (e) {
+      emit(
+        state.copyWith(
+          status: WeatherStatus.error,
+          error: e,
+        ),
+      );
+    }
+  }
+
   Future<void> _fetchWeather(
     FetchWeatherEvent event,
     Emitter<WeatherState> emit,
@@ -24,11 +69,8 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
     // try to load the weather information
     try {
       print("Weather State Before Emit: $state");
-      // get a weather API services instance
-      final WeatherApiServices weatherApiServices = WeatherApiServices();
-      // use that to get the weather information
       final Weather weather =
-          await weatherApiServices.getWeather(event.inputQuery);
+          await apiWeatherRepository.setWeather(event.inputQuery);
       // load the weather into the state and emit it
       emit(
         state.copyWith(
@@ -37,8 +79,14 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
         ),
       );
       print("Weather State After Emit: $state");
-    } on CustomError catch (e) {
-      emit(state.copyWith(status: WeatherStatus.error, error: e));
+      // handle our exceptions and errors
+    } on GenericError catch (e) {
+      emit(
+        state.copyWith(
+          status: WeatherStatus.error,
+          error: e,
+        ),
+      );
     }
   }
 }
