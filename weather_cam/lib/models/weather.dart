@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
-import 'package:my_capstone_weather/models/forecast.dart';
+import 'package:flutter_application/models/forecast.dart';
 
 class Weather extends Equatable {
   final String name;
@@ -85,7 +85,7 @@ class Weather extends Equatable {
   }
 
   // convert our forecast model back to Json
-  // The return is a map with String keys and dynamic values 
+  // The return is a map with String keys and dynamic values
   Map<String, dynamic> toJson() {
     return {
       'name': name,
@@ -99,7 +99,7 @@ class Weather extends Equatable {
       'date': date,
       // take each forecast object from the forecast list
       // send them to the toJson function of forecast - this function converts each object to a Map<String, dynamic>
-      // Each map is then returned and added to a list in the form of forecast: [{},{},{}] 
+      // Each map is then returned and added to a list in the form of forecast: [{},{},{}]
       // so forecast is the key word and it has a list of maps as the value
       'forecast':
           forecast.map((forecastItem) => forecastItem.toJson()).toList(),

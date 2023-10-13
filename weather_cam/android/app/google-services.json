@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1038584511675",
+    "project_id": "weather-cam-capstone-base",
+    "storage_bucket": "weather-cam-capstone-base.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1038584511675:android:6d7d5563047cdd9326fd9e",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWlLcrnVTDCwLv2JgAFTBHc0WEkU_3-Zo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

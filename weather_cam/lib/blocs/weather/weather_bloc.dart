@@ -3,12 +3,11 @@
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_application/errors/generic_error.dart';
+import 'package:flutter_application/models/weather.dart';
+import 'package:flutter_application/repositories/weather_respository.dart';
+import 'package:flutter_application/services/location_services.dart';
 import 'package:geolocator/geolocator.dart';
-
-import 'package:my_capstone_weather/errors/generic_error.dart';
-import 'package:my_capstone_weather/models/weather.dart';
-import 'package:my_capstone_weather/repositories/weather_respository.dart';
-import 'package:my_capstone_weather/services/location_services.dart';
 
 part 'weather_event.dart';
 part 'weather_state.dart';

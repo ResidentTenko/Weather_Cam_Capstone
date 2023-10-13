@@ -2,10 +2,9 @@
 // ignore_for_file: avoid_print
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-
-import 'package:my_capstone_weather/errors/generic_error.dart';
-import 'package:my_capstone_weather/models/city_model.dart';
-import 'package:my_capstone_weather/services/api_weather_services.dart';
+import 'package:flutter_application/errors/generic_error.dart';
+import 'package:flutter_application/models/city_model.dart';
+import 'package:flutter_application/services/api_weather_services.dart';
 
 part 'search_event.dart';
 part 'search_state.dart';

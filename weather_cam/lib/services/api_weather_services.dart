@@ -1,12 +1,12 @@
 import 'dart:convert';
 
+import 'package:flutter_application/errors/generic_error.dart';
+import 'package:flutter_application/errors/http_error_status_exception.dart';
+import 'package:flutter_application/errors/weather_api_exception.dart';
+import 'package:flutter_application/models/city_model.dart';
+import 'package:flutter_application/models/weather.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'package:my_capstone_weather/errors/generic_error.dart';
-import 'package:my_capstone_weather/errors/http_error_status_exception.dart';
-import 'package:my_capstone_weather/errors/weather_api_exception.dart';
-import 'package:my_capstone_weather/models/city_model.dart';
-import 'package:my_capstone_weather/models/weather.dart';
 
 class ApiWeatherServices {
   final http.Client httpClient;

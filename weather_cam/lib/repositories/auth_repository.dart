@@ -1,13 +1,16 @@
+//packageds
 // ignore_for_file: library_prefixes
-import 'package:cloud_firestore/cloud_firestore.dart';
-// we alias to prevent a conflict when using the user model defined by us and the user model provided by firebase at the same time
-import 'package:firebase_auth/firebase_auth.dart' as fbAuth;
-import 'package:my_capstone_weather/errors/auth_error.dart';
 
-// To signup, signin, and signout of firebase you need to call functions provided by firebase
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fbAuth;
+import 'package:flutter_application/constants/db_constant.dart';
+import 'package:flutter_application/errors/auth_error.dart';
+
+// cloudfire store instance and a friebaseauth instance to communicate with firestore and firebase auth
+//firebaseFirestore is an instance of FirebaseFirestore, which is used for Firestore operations
+//firebaseAuth is an instance of FirebaseAuth from the fbAuth namespace, which is used for Firebase Authentication operations.
 
 class AuthRepository {
-  // get a firebase auth instance and a firestore instance to communicate with firestore and firebase through the constructor
   final FirebaseFirestore firebaseFirestore;
   final fbAuth.FirebaseAuth firebaseAuth;
   AuthRepository({
@@ -15,73 +18,65 @@ class AuthRepository {
     required this.firebaseAuth,
   });
 
-  // create a getter function so we can access the fireabase UserChanges stream function easily
-  // User changes is a stream so declare our getter as a user stream
-  // we can listen to changes in the stream
-  // for example: when logged out, user will become null
+  // the return type is Stream<fbAuth.User?>, which means it's a stream that emits events of type fbAuth.User?.
+  // ? => indicates that the user object can be null
+  // firebaseAuth.userChanges() is a method provided by the FirebaseAuth class.
+  // It returns a stream that emits an event whenever the user's authentication status changes.
+  // By using this getter, parts of your Flutter app can listen to this user stream and react to changes in the user's authentication status
   Stream<fbAuth.User?> get user => firebaseAuth.userChanges();
 
-  // future void type async function.
-  // we get name, email, and password from the input form
-  // the signup function only needs email and password but we ask for name so we can create a firestore collection for storage functionality
+  //Sign up is a future function that receives the name(to create a user collection in firestore), email and password
+
   Future<void> signup({
     required String name,
     required String email,
-    required String password,
+    required password,
   }) async {
     try {
-      // call the firebase function createUserithEmailandPassword
-      // if this function succeeds you will be logged in at the same time
-
+      // if this functions succeds youll be logged in
+      //This code is using the firebaseAuth object to create a new user account with an email and password.
+      //The method createUserWithEmailAndPassword is asynchronous, so it returns a Futur
+      //Once completed, the result is stored in the userCredential variable, which is of type UserCredential
       final fbAuth.UserCredential userCredential =
           await firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      // btw value of the user getter changes at this point
-
-      // signed in user is not null since signup was successful - therefore use the bang operator
+      //The userCredential object has a property user that represents the user who was just signed up.
+      //This property can be null in some cases (for example, if the sign-up failed). However, the !  is used here to assert that user is not null.
       final signedInUser = userCredential.user!;
 
-      // now we create a document with signed in user's id as the Document ID/Document reference
-      // remember if the docid doesn't exist, the doc is created and the values are set then and there
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(signedInUser.uid)
-          .set(
-        {
-          'name': name,
-          'email': email,
-          'profileImage': 'https://picsum.photos/300',
-          'point': 0,
-          'rank': 'bronze',
-        },
-      );
+      // this start the operation with Firestore
+      // usersRef refers to the refrence collection in Firestore where the user data is store db_constant
+      //.doc(signedInUser.uid) is used to get a reference to a specific document in the users collection. The document's ID is the unique user ID (uid) of the signed-in user.
+      //This is a way to store or retrieve data specific to the user who just signed up.
+      await usersRef.doc(signedInUser.uid).set({
+        'name': name,
+        'email': email,
+      });
     }
-    // separate firebase auth error from general error and handle it seperately
-    // if an error occurs, a firebase auth exception object is received. this object has three properites
-    // we handle the error and properties using our custom error
+
+    //his block catches exceptions of type fbAuth.FirebaseAuthException.
+    //If such an exception occurs, it creates a new CostumerError with the details from the caught exception (e.code, e.message, and e.plugin).
+    //The ! after e.message asserts that e.message is not null
     on fbAuth.FirebaseAuthException catch (e) {
-      // throwing an error means the handling of the error is left up to the caller
-      // the caller gets a CustomError object and decides what do do with it
-      throw AuthError(
-        code: e.code,
-        message: e.message!,
-        plugin: e.plugin,
-      );
+      throw AuthError(code: e.code, message: e.message!, plugin: e.plugin);
     }
-    // this is where we handle general errors
+    // This block catches all other exceptions that weren't caught by the previous block.
+    //If any other exception occurs, it creates a new CostumerError with a generic code "Exeption",
+    //the message being the string representation of the caught exception (e.toString()), and a generic plugin value 'flutter/error/server_error'.
     catch (e) {
       throw AuthError(
-        code: 'Exception',
-        message: e.toString(),
-        plugin: 'flutter_error/server_error',
-      );
+          code: "Exeption",
+          message: e.toString(),
+          plugin: 'flutter/error/server_error');
     }
   }
 
-  // the signin function contains the same logic as above
-  // but we do not need to create a user doc in firestore since it already exists on signup
+  //his code uses the firebaseAuth object to sign in an existing user using their email and password.
+  //The method signInWithEmailAndPassword is asynchronous, so it returns a Future. The await keyword is used to wait for this operation to complete before moving on.
+  //If the sign-in is successful, the user will be authenticated. If not, this method will throw an error (like if the email/password combination is incorrect).
+
   Future<void> signin({
     required String email,
     required String password,
@@ -92,21 +87,15 @@ class AuthRepository {
         password: password,
       );
     } on fbAuth.FirebaseAuthException catch (e) {
-      throw AuthError(
-        code: e.code,
-        message: e.message!,
-        plugin: e.plugin,
-      );
+      throw AuthError(code: e.code, message: e.message!, plugin: e.plugin);
     } catch (e) {
       throw AuthError(
-        code: 'Exception',
-        message: e.toString(),
-        plugin: 'flutter_error/server_error',
-      );
+          code: "Exception",
+          message: e.toString(),
+          plugin: 'flutter/error/server_error');
     }
   }
 
-  // call the signout function of the firebase auth instance
   Future<void> signout() async {
     await firebaseAuth.signOut();
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_capstone_weather/pages/live_cam_stream.dart';
-import 'package:my_capstone_weather/widgets/select_live_cam_button.dart';
+import 'package:flutter_application/pages/live_cam_stream.dart';
+import 'package:flutter_application/widgets/select_live_cam_button.dart';
 
 class LiveCamSelect extends StatelessWidget {
   const LiveCamSelect({Key? key}) : super(key: key);

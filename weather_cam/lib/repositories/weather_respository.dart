@@ -1,10 +1,9 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// ignore_for_file: public_member_api_docs, sort_constructors_first, library_prefixes
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fbAuth;
-
-import 'package:my_capstone_weather/errors/generic_error.dart';
-import 'package:my_capstone_weather/models/weather.dart';
-import 'package:my_capstone_weather/services/api_weather_services.dart';
+import 'package:flutter_application/errors/generic_error.dart';
+import 'package:flutter_application/models/weather.dart';
+import 'package:flutter_application/services/api_weather_services.dart';
 
 class ApiWeatherRepository {
   final ApiWeatherServices apiWeatherServices;

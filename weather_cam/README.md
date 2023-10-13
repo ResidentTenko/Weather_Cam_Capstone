@@ -1,4 +1,4 @@
-# my_capstone_weather
+# flutter_application
 
 A new Flutter project.
 

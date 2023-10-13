@@ -1,5 +1,5 @@
+import 'package:flutter_application/errors/generic_error.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:my_capstone_weather/errors/generic_error.dart';
 
 class LocationServices {
   // implements the get location function

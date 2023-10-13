@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/blocs/weather/weather_bloc.dart';
+import 'package:flutter_application/widgets/liveview_app_bar.dart';
+import 'package:flutter_application/widgets/three_days_forecast.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:my_capstone_weather/bloc/weather/weather_bloc.dart';
-import 'package:my_capstone_weather/widgets/app_bar.dart';
-import 'package:my_capstone_weather/widgets/three_days_forecast.dart';
 
 class HomePage extends StatefulWidget {
   static const String routeName = '/home';
@@ -49,7 +49,7 @@ class _HomePageState extends State<HomePage> {
           else {
             return Scaffold(
               backgroundColor: Colors.transparent,
-              appBar: const CustomAppBar(),
+              appBar: const LiveViewAppBar(),
               body: Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
