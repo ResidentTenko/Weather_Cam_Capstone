@@ -4,3 +4,4 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 // the reason is common to create and save seperate user collection for additional user who sign to firebase
 
 final usersRef = FirebaseFirestore.instance.collection('users');
+final weatherRef = FirebaseFirestore.instance.collection('weather');

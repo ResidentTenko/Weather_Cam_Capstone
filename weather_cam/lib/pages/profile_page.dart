@@ -30,14 +30,25 @@ class _ProfilePage extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Profile')),
+        appBar: AppBar(
+          title: const Text('Profile'),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  context.read<AuthBloc>().add(SignoutRequestedEvent());
+                },
+                icon: Icon(
+                  Icons.logout_rounded,
+                ))
+          ],
+        ),
         body: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [Color(0xff955cd1), Color(0xff3fa2fa)],
               begin: Alignment.bottomCenter,
               end: Alignment.topCenter,
-              stops: [0.3, 0.85],
+              stops: [0.4, 0.85],
             ),
           ),
           child: Center(
@@ -73,49 +84,163 @@ class _ProfilePage extends State<ProfilePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Icon(Icons.person, color: Colors.white), // Name icon
-                          SizedBox(width: 20.0),
-                          Text(
-                            'Name: ${state.user.name}',
-                            style:
-                                TextStyle(fontSize: 18.0, color: Colors.white),
-                          ),
-                        ],
-                      ),
                       SizedBox(
                         height: 10.0,
                       ),
-                      Row(
-                        children: [
-                          Icon(Icons.email, color: Colors.white), // Email icon
-                          SizedBox(width: 10.0),
-                          Text(
-                            'Email: ${state.user.email}',
-                            style:
-                                TextStyle(fontSize: 18.0, color: Colors.white),
-                          ),
-                        ],
+                      Center(
+                        child: Image.asset(
+                          'assets/images/sunny.png',
+                          width: 250,
+                          height: 250,
+                        ),
                       ),
                       SizedBox(
-                        height: 10.0,
+                        height: 20.0,
                       ),
-                      Row(
+                      Column(
                         children: [
-                          Icon(Icons.perm_identity,
-                              color: Colors.white), // ID icon
-                          SizedBox(width: 10.0),
-                          Text(
-                            'ID: ${state.user.id}',
-                            style:
-                                TextStyle(fontSize: 18.0, color: Colors.white),
+                          Container(
+                            padding: EdgeInsets.all(10.0),
+                            margin: EdgeInsets.only(bottom: 10.0),
+                            decoration: BoxDecoration(
+                              color: const Color(0xff955cd1),
+                              borderRadius: BorderRadius.circular(8.0),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Color(0xff3fa2fa),
+                                  blurRadius: 4.0,
+                                  offset: Offset(-3.0, 3.0),
+                                ),
+                                BoxShadow(
+                                  color: Color(0xff3fa2fa),
+                                  blurRadius: 4.0,
+                                  offset: Offset(1.5, 1.5),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.person,
+                                    color: Colors.white, size: 30.0),
+                                SizedBox(width: 15.0),
+                                Expanded(
+                                  child: Text(
+                                    'Name: ${state.user.name}',
+                                    style: TextStyle(
+                                        fontSize: 24.0, color: Colors.white),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.all(10.0),
+                            margin: EdgeInsets.only(bottom: 10.0),
+                            decoration: BoxDecoration(
+                              color: const Color(0xff955cd1),
+                              borderRadius: BorderRadius.circular(8.0),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Color(0xff3fa2fa),
+                                  blurRadius: 4.0,
+                                  offset: Offset(-3.0, 3.0),
+                                ),
+                                BoxShadow(
+                                  color: Color(0xff3fa2fa),
+                                  blurRadius: 4.0,
+                                  offset: Offset(1.5, 1.5),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.email,
+                                    color: Colors.white, size: 30.0),
+                                SizedBox(width: 15.0),
+                                Expanded(
+                                  child: Text(
+                                    'Email: ${state.user.email}',
+                                    style: TextStyle(
+                                        fontSize: 24.0, color: Colors.white),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.all(10.0),
+                            margin: EdgeInsets.only(bottom: 10.0),
+                            decoration: BoxDecoration(
+                              color: const Color(0xff955cd1),
+                              borderRadius: BorderRadius.circular(8.0),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Color(0xff3fa2fa),
+                                  blurRadius: 4.0,
+                                  offset: Offset(-3.0, 3.0),
+                                ),
+                                BoxShadow(
+                                  color: Color(0xff3fa2fa),
+                                  blurRadius: 4.0,
+                                  offset: Offset(1.5, 1.5),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.location_city,
+                                    color: Colors.white, size: 30.0),
+                                SizedBox(width: 15.0),
+                                Expanded(
+                                  child: Text(
+                                    'Location: Mountain View',
+                                    style: TextStyle(
+                                        fontSize: 24.0, color: Colors.white),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.all(10.0),
+                            margin: EdgeInsets.only(bottom: 10.0),
+                            decoration: BoxDecoration(
+                              color: const Color(0xff955cd1),
+                              borderRadius: BorderRadius.circular(8.0),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Color(0xff3fa2fa),
+                                  blurRadius: 4.0,
+                                  offset: Offset(-3.0, 3.0),
+                                ),
+                                BoxShadow(
+                                  color: Color(0xff3fa2fa),
+                                  blurRadius: 4.0,
+                                  offset: Offset(1.5, 1.5),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.perm_identity,
+                                    color: Colors.white, size: 30.0),
+                                SizedBox(width: 15.0),
+                                Expanded(
+                                  child: Text(
+                                    'ID: ${state.user.id}',
+                                    style: TextStyle(
+                                        fontSize: 24.0, color: Colors.white),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
-                      ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
+                      )
                     ],
                   ),
                 );

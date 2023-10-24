@@ -20,11 +20,11 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
     required this.apiWeatherRepository,
   }) : super(WeatherState.initial()) {
     on<FetchWeatherEvent>(_fetchWeather);
-    on<FetchWeatherByLocationEvent>(_fetchWeatherByLocation);
+    on<FetchWeatherFromLocationEvent>(_fetchWeatherByLocation);
   }
 
   Future<void> _fetchWeatherByLocation(
-    FetchWeatherByLocationEvent event,
+    FetchWeatherFromLocationEvent event,
     Emitter<WeatherState> emit,
   ) async {
     // the next state after initial should be loading

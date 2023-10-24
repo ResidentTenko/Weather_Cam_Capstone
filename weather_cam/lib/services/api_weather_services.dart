@@ -1,5 +1,8 @@
-import 'dart:convert';
+// ignore_for_file: library_prefixes
 
+import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_application/constants/db_constant.dart';
 import 'package:flutter_application/errors/generic_error.dart';
 import 'package:flutter_application/errors/http_error_status_exception.dart';
 import 'package:flutter_application/errors/weather_api_exception.dart';
@@ -8,12 +11,13 @@ import 'package:flutter_application/models/weather.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
+
 class ApiWeatherServices {
   final http.Client httpClient;
   // constructor
   ApiWeatherServices({required this.httpClient});
   // takes a string and returns a weather type object wrapped in a future
-  Future<Weather> getWeatherFromApi(String inputQuery) async {
+  Future<Weather> getWeatherFromApi({required String query}) async {
     // use a uri object instead of a direct url
     final Uri uri = Uri(
       // we're basically building the url piece by piece
@@ -22,7 +26,7 @@ class ApiWeatherServices {
       path: '/v1/forecast.json',
       queryParameters: {
         'key': dotenv.env['APPID'],
-        'q': inputQuery,
+        'q': query,
         'days': '3',
         'aqi': 'no',
         'alerts': 'no',
@@ -47,11 +51,11 @@ class ApiWeatherServices {
       if (responseBody.isEmpty) {
         throw WeatherApiException(
             message:
-                'WeatherApiException: Cannot get the weather information of: $inputQuery');
+                'WeatherApiException: Cannot get the weather information of: $query');
       }
 
       // feed the response bodyto our weather object and build a weather object
-      final Weather weather = Weather.fromJson(responseBody);
+      final Weather weather = Weather.fromApiJson(responseBody);
 
       // return our weather object
       return weather;
@@ -60,6 +64,33 @@ class ApiWeatherServices {
       // we will convert all errors to a generic error
       throw GenericError(message: e);
     }
+  }
+
+  Future<Weather> getWeatherFromFBDatabase({
+    required String dbUserID,
+  }) async {
+    try {
+      final DocumentSnapshot weatherDoc = await weatherRef.doc(dbUserID).get();
+
+      if (weatherDoc.exists) {
+        final weather = Weather.fromFBDatabase(weatherDoc);
+        return weather;
+      }
+
+      throw const GenericError(message: "Weather information does not exist");
+    } catch (e) {
+      throw GenericError(message: e);
+    }
+  }
+
+  Future<void> addWeatherToDatabase({
+    required Weather weather,
+    required String dbUserID,
+  }) async {
+    // Convert the Weather object to a Map using toJson
+    final weatherData = weather.toJson();
+    // Add the weather data to Firestore with an auto-generated document ID
+    await weatherRef.doc(dbUserID).set(weatherData);
   }
 
   Future<List<City>> getCitiesFromAPi(String inputQuery) async {

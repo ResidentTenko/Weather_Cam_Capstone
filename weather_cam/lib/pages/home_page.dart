@@ -5,6 +5,7 @@ import 'package:flutter_application/widgets/three_days_forecast.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+
 class HomePage extends StatefulWidget {
   static const String routeName = '/home';
   const HomePage({Key? key}) : super(key: key);
@@ -17,9 +18,13 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+
+    // Check if the storage is empty
+    // final isStorageEmpty = await HydratedBlocStorage.getInstance().isEmpty;
+
     // read the context from Location Bloc gotten from Bloc Provider in main
     // call the add event of that Location Bloc
-    context.read<WeatherBloc>().add(FetchWeatherByLocationEvent());
+    context.read<WeatherBloc>().add(FetchWeatherFromLocationEvent());
   }
 
   @override
@@ -30,10 +35,18 @@ class _HomePageState extends State<HomePage> {
       width: size.width,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xff955cd1), Color(0xff3fa2fa)],
+          colors: [
+            Color(0xff955cd1),
+            Color(
+              0xff3fa2fa,
+            ),
+          ],
           begin: Alignment.bottomCenter,
           end: Alignment.topCenter,
-          stops: [0.3, 0.85],
+          stops: [
+            0.3,
+            0.85,
+          ],
         ),
       ),
       child: BlocBuilder<WeatherBloc, WeatherState>(
@@ -50,95 +63,105 @@ class _HomePageState extends State<HomePage> {
             return Scaffold(
               backgroundColor: Colors.transparent,
               appBar: const LiveViewAppBar(),
-              body: Center(
+              body: SingleChildScrollView(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 15),
-                    Text(
-                      state.weather.name,
-                      style: const TextStyle(
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 10.0,
+                      ),
+                      child: Text(
+                        state.weather.name,
+                        style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 30,
-                          fontFamily: 'MavenPro'),
-                    ),
-                    const SizedBox(height: 15),
-                    Image.network('https:${state.weather.icon}',
-                        width: 180, height: 180, fit: BoxFit.fill),
-                    Text(
-                      state.weather.condition,
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 35,
-                          fontFamily: 'MavenPro'),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '${state.weather.temp}°',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 48,
-                        fontFamily: 'MavenPro',
-                        fontWeight: FontWeight.bold,
+                          fontSize: 60,
+                          fontFamily: 'MavenPro',
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Feels Like: ${state.weather.feelsLike}°',
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 25,
-                          fontFamily: 'Hubballi'),
+                    const SizedBox(
+                      height: 180,
                     ),
-                    const SizedBox(height: 10),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          'Min: ${state.weather.minTemp}°',
-                          style: const TextStyle(
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            left: 10.0,
+                          ),
+                          child: Text(
+                            '${state.weather.temp.round()}°',
+                            style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 22,
-                              fontFamily: 'MavenPro'),
+                              fontSize: 60,
+                              fontFamily: 'MavenPro',
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                        const SizedBox(width: 15),
-                        Text(
-                          'Max: ${state.weather.maxTemp}°',
-                          style: const TextStyle(
+                        Baseline(
+                          baseline: 50.0,
+                          baselineType: TextBaseline.alphabetic,
+                          child: Text(
+                            state.weather.condition,
+                            style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 22,
-                              fontFamily: 'MavenPro'),
+                              fontSize: 30,
+                              fontFamily: 'MavenPro',
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
-                    Text(
-                      "${DateFormat('E').format(state.weather.date)}                 ${DateFormat('MMMd').format(state.weather.date)}",
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontFamily: 'Hubballi'),
-                    ),
+                    const SizedBox(height: 2),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        ThreeDaysForecast(
-                          date: state.weather.forecast[0].forecastDay,
-                          imageUrl: 'https:${state.weather.forecast[0].icon}',
-                          temperature: '${state.weather.forecast[0].maxTemp}°',
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10.0),
+                          child: Text(
+                            '${DateFormat('E').format(
+                              DateTime.fromMillisecondsSinceEpoch(
+                                  state.weather.date * 1000),
+                            )}:',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontFamily: 'MavenPro',
+                            ),
+                          ),
                         ),
-                        ThreeDaysForecast(
-                          date: state.weather.forecast[1].forecastDay,
-                          imageUrl: 'https:${state.weather.forecast[1].icon}',
-                          temperature: '${state.weather.forecast[1].maxTemp}°',
-                        ),
-                        ThreeDaysForecast(
-                          date: state.weather.forecast[2].forecastDay,
-                          imageUrl: 'https:${state.weather.forecast[2].icon}',
-                          temperature: '${state.weather.forecast[2].maxTemp}°',
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10.0),
+                          child: Text(
+                            '${state.weather.minTemp.round()}° / ${state.weather.maxTemp.round()}°',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontFamily: 'MavenPro',
+                            ),
+                          ),
                         ),
                       ],
                     ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.vertical,
+                      itemCount: state.weather.forecast.length,
+                      itemBuilder: (context, index) {
+                        final forecast = state.weather.forecast[index];
+                        
+                        return ThreeDaysForecast(
+                          day: forecast.forecastDate,
+                          imageUrl: 'https:${forecast.icon}',
+                          forcastMinTemp: '${forecast.minTemp.round()}°',
+                          forcastMaxTemp: '${forecast.maxTemp.round()}°'
+                        );
+                      },
+                    )
                   ],
                 ),
               ),

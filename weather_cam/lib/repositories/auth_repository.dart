@@ -73,7 +73,7 @@ class AuthRepository {
     }
   }
 
-  //his code uses the firebaseAuth object to sign in an existing user using their email and password.
+  //This code uses the firebaseAuth object to sign in an existing user using their email and password.
   //The method signInWithEmailAndPassword is asynchronous, so it returns a Future. The await keyword is used to wait for this operation to complete before moving on.
   //If the sign-in is successful, the user will be authenticated. If not, this method will throw an error (like if the email/password combination is incorrect).
 

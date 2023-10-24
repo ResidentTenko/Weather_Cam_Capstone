@@ -54,7 +54,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBWlLcrnVTDCwLv2JgAFTBHc0WEkU_3-Zo',
-    appId: '1:1038584511675:android:bc9abac51e06bfce26fd9e',
+    appId: '1:1038584511675:android:6d7d5563047cdd9326fd9e',
     messagingSenderId: '1038584511675',
     projectId: 'weather-cam-capstone-base',
     storageBucket: 'weather-cam-capstone-base.appspot.com',
