@@ -8,10 +8,10 @@ import 'package:flutter_application/blocs/profile/profile_cubit.dart';
 import 'package:flutter_application/blocs/search/search_bloc.dart';
 import 'package:flutter_application/blocs/signin/signin_cubit.dart';
 import 'package:flutter_application/blocs/signup/signup_cubit.dart';
+import 'package:flutter_application/blocs/temp_settings/temp_settings_cubit.dart';
 import 'package:flutter_application/blocs/weather/weather_bloc.dart';
 import 'package:flutter_application/firebase_options.dart';
 import 'package:flutter_application/pages/home_page.dart';
-import 'package:flutter_application/pages/profile_page.dart';
 import 'package:flutter_application/pages/signin_page.dart';
 import 'package:flutter_application/pages/signup_page.dart';
 import 'package:flutter_application/pages/splash_page.dart';
@@ -100,6 +100,9 @@ class MyApp extends StatelessWidget {
                   context.read<ApiWeatherRepository>().apiWeatherServices,
             ),
           ),
+          BlocProvider<TempSettingsCubit>(
+            create: (context) => TempSettingsCubit(),
+          ),
         ],
         child: MaterialApp(
           title: 'FireBase Auth',
@@ -111,7 +114,6 @@ class MyApp extends StatelessWidget {
           routes: {
             SignupPage.routeName: (context) => const SignupPage(),
             SigninPage.routeName: (context) => const SigninPage(),
-            ProfilePage.routeName: (context) => const ProfilePage(),
             HomePage.routeName: (context) => const HomePage(),
           },
         ),

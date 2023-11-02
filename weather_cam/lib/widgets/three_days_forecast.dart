@@ -44,6 +44,7 @@ class ThreeDaysForecast extends StatelessWidget {
           ],
         ),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             Text(
               '${DateFormat('E').format(

@@ -1,5 +1,4 @@
 // ignore_for_file: prefer_const_constructors, sort_child_properties_last
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application/blocs/signin/signin_cubit.dart';
 import 'package:flutter_application/pages/signup_page.dart';
@@ -136,13 +135,27 @@ class _SigninPage extends State<SigninPage> {
                               : 'Sign In',
                         ),
                         style: ElevatedButton.styleFrom(
-                            textStyle: TextStyle(
-                                fontSize: 20.0, fontWeight: FontWeight.bold),
-                            padding:
-                                const EdgeInsets.symmetric(vertical: 10.0)),
+                          textStyle: TextStyle(
+                              fontSize: 20.0, fontWeight: FontWeight.bold),
+                          padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        ),
                       ),
                       SizedBox(
-                        height: 20.0,
+                        height: 5.0,
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          context.read<SigninCubit>().signInWithGoogle();
+                        },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image.asset('assets/images/google.png',
+                                height: 140.0),
+                            Image.asset('assets/images/facebook.png',
+                                height: 140.0),
+                          ],
+                        ),
                       ),
                       TextButton(
                         onPressed: state.signinStatus == SigninStatus.submitting

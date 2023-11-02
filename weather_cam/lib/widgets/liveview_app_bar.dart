@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/blocs/auth/auth_bloc.dart';
+import 'package:flutter_application/blocs/temp_settings/temp_settings_cubit.dart';
 import 'package:flutter_application/pages/live_cam_select.dart';
-import 'package:flutter_application/pages/profile_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LiveViewAppBar extends StatelessWidget implements PreferredSizeWidget {
   const LiveViewAppBar({super.key});
@@ -14,37 +16,75 @@ class LiveViewAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 10.0),
-          child: PopupMenuButton<int>(
-            icon: const Icon(Icons.more_vert, color: Colors.white, size: 35),
-            //to build the list of items Profile and LiveCam
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 1,
-                child: Row(
-                  children: [
-                    Icon(Icons.person, color: Color(0xff955cd1)),
-                    SizedBox(width: 10),
-                    Text("Profile"),
-                  ],
-                ),
-              ),
-              const PopupMenuItem(
-                value: 2,
-                child: Row(
-                  children: [
-                    Icon(Icons.photo_camera_front, color: Color(0xff955cd1)),
-                    SizedBox(width: 10),
-                    Text("LiveCam"),
-                  ],
-                ),
-              ),
-            ],
-            onSelected: (value) {
-              if (value == 1) {
-                _openProfilePage(context);
-              } else if (value == 2) {
-                _openLiveCamPage(context);
-              }
+          child: Builder(
+            builder: (context) {
+              return PopupMenuButton<int>(
+                icon:
+                    const Icon(Icons.more_vert, color: Colors.white, size: 35),
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 1,
+                    child: Row(
+                      children: [
+                        Icon(Icons.photo_camera_front,
+                            color: Color(0xff955cd1)),
+                        SizedBox(width: 10),
+                        Text(
+                          "LiveCam",
+                          style: TextStyle(
+                              color: Color(0xff955cd1),
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 2,
+                    child: Row(
+                      children: [
+                        const Icon(Icons.thermostat, color: Color(0xff955cd1)),
+                        const SizedBox(width: 10),
+                        Text(
+                          context.read<TempSettingsCubit>().state.tempUnit ==
+                                  TempUnit.celsius
+                              ? "°F"
+                              : "°C",
+                          style: const TextStyle(
+                              color: Color(0xff955cd1),
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 3,
+                    child: Row(
+                      children: [
+                        Icon(Icons.logout, color: Color(0xff955cd1)),
+                        SizedBox(width: 10),
+                        Text(
+                          "Logout",
+                          style: TextStyle(
+                              color: Color(0xff955cd1),
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                onSelected: (value) {
+                  if (value == 1) {
+                    _openLiveCamPage(context);
+                  } else if (value == 2) {
+                    context.read<TempSettingsCubit>().toggleTempUnit();
+                  } else if (value == 3) {
+                    context.read<AuthBloc>().add(SignoutRequestedEvent());
+                  }
+                },
+              );
             },
           ),
         ),
@@ -61,16 +101,6 @@ class LiveViewAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  void _openProfilePage(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const ProfilePage(),
-      ),
-    );
-  }
-
-  //prefersize of the widget default size of the app bar
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
