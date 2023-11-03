@@ -4,7 +4,7 @@ import 'package:geolocator/geolocator.dart';
 class LocationServices {
   // implements the get location function
   // returns a position object wrapped in a future
-  Future<Position> getCurrentPosition() async {
+  Future<Position> getLastKnownPosition() async {
     bool serviceEnabled;
     LocationPermission permission;
     try {
@@ -37,9 +37,41 @@ class LocationServices {
       }
 
       // When we reach here, permissions are granted and we can
-      // continue accessing the position of the device.
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.best);
+
+      // get the last known position from the device's cache - if null then get the current position
+      Position position = await Geolocator.getLastKnownPosition() ??await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+
+      return position;
+    } catch (e) {
+      throw GenericError(message: e);
+    }
+  }
+
+  Future<Position> getCurrentPosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+    try {
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        return Future.error('Location services are disabled.');
+      }
+
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          return Future.error('Location permissions are denied');
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        return Future.error(
+            'Location permissions are permanently denied, we cannot request permissions.');
+      }
+
+      // get the current position this time
+      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+
       return position;
     } catch (e) {
       throw GenericError(message: e);

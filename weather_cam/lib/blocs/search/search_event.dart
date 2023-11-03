@@ -14,3 +14,5 @@ class FetchCityListEvent extends SearchEvent{
     required this.cityQuery,
   });
 }
+
+class ResetSearchListEvent extends SearchEvent{}

@@ -4,8 +4,8 @@ import 'package:flutter_application/blocs/temp_settings/temp_settings_cubit.dart
 import 'package:flutter_application/pages/live_cam_select.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class LiveViewAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const LiveViewAppBar({super.key});
+class HomePageAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const HomePageAppBar({super.key});
 
   @override
   Widget build(BuildContext context) {

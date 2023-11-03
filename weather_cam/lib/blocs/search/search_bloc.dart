@@ -15,6 +15,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     required this.apiWeatherServices,
   }) : super(SearchState.initial()) {
     on<FetchCityListEvent>(_fetchCities);
+    on<ResetSearchListEvent>(_resetSearch);
   }
   Future<void> _fetchCities(
     FetchCityListEvent event,
@@ -36,7 +37,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
           cities: cities,
         ),
       );
-      print("Weather State After Emit: $state");
+      print("City List State After Emit: $state");
     }
     // handle our exceptions and errors
     on GenericError catch (e) {
@@ -47,5 +48,12 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         ),
       );
     }
+  }
+
+  void _resetSearch(
+    ResetSearchListEvent event,
+    Emitter<SearchState> emit,
+  ) {
+    emit(SearchState.initial());
   }
 }

@@ -44,32 +44,33 @@ class ThreeDaysForecast extends StatelessWidget {
           ],
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Text(
-              '${DateFormat('E').format(
-                DateTime.fromMillisecondsSinceEpoch(
-                  day * 1000,
-                  isUtc: true,
+            Expanded(
+              child: Text(
+                '${DateFormat('E').format(
+                  DateTime.fromMillisecondsSinceEpoch(
+                    day * 1000,
+                    isUtc: true,
+                  ),
+                )}:',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontFamily: 'MavenPro',
                 ),
-              )}:',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontFamily: 'MavenPro',
+              ),
+            ),
+            Align(
+              alignment: Alignment.center,
+              child: Image.network(
+                imageUrl, // Use the imageUrl to load the image from a network URL
+                fit: BoxFit.cover,
+                height: 50,
+                width: 50,
               ),
             ),
             const SizedBox(
-              width: 60,
-            ),
-            Image.network(
-              imageUrl, // Use the imageUrl to load the image from a network URL
-              fit: BoxFit.cover,
-              height: 50,
-              width: 50,
-            ),
-            const SizedBox(
-              width: 90,
+              width: 100,
             ),
             Text(
               '$forcastMinTemp / $forcastMaxTemp',

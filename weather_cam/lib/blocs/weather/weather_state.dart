@@ -5,7 +5,18 @@ enum WeatherStatus {
   initial,
   loading,
   loaded,
-  error,
+  // close out the properties of the enum with ';'
+  error;
+
+  // returns a string
+  // name is the string representation of the enum's value
+  // mouse over name for more
+  String toJson() => name;
+
+  /// The fromJson method takes a JSON string as input and uses the values.byName method to convert it back into the corresponding WeatherStatus enum value.
+  /// So it returns a value of the enum that matches the name of the taken string
+  /// If the input string matches one of the enum's names, it returns the corresponding enum value; otherwise, it returns null
+  static WeatherStatus fromJson(String json) => values.byName(json);
 }
 
 // we make error dynamic to handle different types of exceptions
@@ -48,6 +59,24 @@ class WeatherState extends Equatable {
       status: status ?? this.status,
       weather: weather ?? this.weather,
       error: error ?? this.error,
+    );
+  }
+
+  // Called when converting the state to a map (think of it in terms of JSON)
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'status': status.toJson(),
+      'weather': weather.toJson(),
+      'error': error.toJson(),
+    };
+  }
+
+  // Called when converting the storage JSON back to a state object
+  factory WeatherState.fromJson(Map<String, dynamic> json) {
+    return WeatherState(
+      status: WeatherStatus.fromJson(json['status']),
+      weather: Weather.fromStorageJson(json['weather'] as Map<String, dynamic>),
+      error: GenericError.fromJson(json['error'] as dynamic),
     );
   }
 }

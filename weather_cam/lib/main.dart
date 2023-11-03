@@ -19,20 +19,32 @@ import 'package:flutter_application/repositories/auth_repository.dart';
 import 'package:flutter_application/repositories/profile_repository.dart';
 import 'package:flutter_application/repositories/weather_respository.dart';
 import 'package:flutter_application/services/api_weather_services.dart';
+import 'package:flutter_application/services/location_services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 
-void main() async {
+
+Future <void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+    ),
+  );
+  // the hydrated bloc storage.build function calls native code so we need to call ensure initialized
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: await getApplicationDocumentsDirectory(),
   );
   await dotenv.load(fileName: '.env');
-  runApp(const MyApp());
+  runApp(
+    const MyApp(),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -92,6 +104,7 @@ class MyApp extends StatelessWidget {
           BlocProvider<WeatherBloc>(
             create: (context) => WeatherBloc(
               apiWeatherRepository: context.read<ApiWeatherRepository>(),
+              locationServices: LocationServices(),
             ),
           ),
           BlocProvider<SearchBloc>(
