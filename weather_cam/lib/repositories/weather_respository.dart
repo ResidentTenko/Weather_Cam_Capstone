@@ -29,6 +29,8 @@ class ApiWeatherRepository {
       // add the weather object to the database
       apiWeatherServices.addWeatherToDatabase(
         weather: weather,
+        forecast: weather.forecast,
+        hourly: weather.hourly,
         dbUserID: dbUserID,
       );
 

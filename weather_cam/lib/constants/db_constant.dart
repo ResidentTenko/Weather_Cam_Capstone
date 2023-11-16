@@ -5,3 +5,5 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 final usersRef = FirebaseFirestore.instance.collection('users');
 final weatherRef = FirebaseFirestore.instance.collection('weather');
+final forecastRef = FirebaseFirestore.instance.collection('forecast');
+final hourlyRef = FirebaseFirestore.instance.collection('hourly');

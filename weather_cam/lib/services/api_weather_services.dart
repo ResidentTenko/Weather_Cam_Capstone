@@ -1,4 +1,4 @@
-// ignore_for_file: library_prefixes
+// ignore_for_file: slash_for_doc_comments
 
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,10 +7,11 @@ import 'package:flutter_application/errors/generic_error.dart';
 import 'package:flutter_application/errors/http_error_status_exception.dart';
 import 'package:flutter_application/errors/weather_api_exception.dart';
 import 'package:flutter_application/models/city_model.dart';
+import 'package:flutter_application/models/forecast.dart';
+import 'package:flutter_application/models/hourly_model.dart';
 import 'package:flutter_application/models/weather.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-
 
 class ApiWeatherServices {
   final http.Client httpClient;
@@ -70,28 +71,97 @@ class ApiWeatherServices {
     required String dbUserID,
   }) async {
     try {
+      // Fetch weather data
       final DocumentSnapshot weatherDoc = await weatherRef.doc(dbUserID).get();
 
-      if (weatherDoc.exists) {
-        final weather = Weather.fromFBDatabase(weatherDoc);
-        return weather;
+      if (!weatherDoc.exists) {
+        throw const GenericError(message: "Weather information does not exist");
       }
 
-      throw const GenericError(message: "Weather information does not exist");
+      final weatherData = weatherDoc.data() as Map<String, dynamic>;
+
+      // add the value to the results map
+      Map<String, dynamic> result = {'weather': weatherData};
+
+      // Fetch forecast data
+      final DocumentSnapshot forecastDoc =
+          await forecastRef.doc(dbUserID).get();
+
+      if (forecastDoc.exists) {
+        final forecastData = forecastDoc.data() as Map<String, dynamic>;
+        result['forecasts'] = forecastData['forecasts'];
+      } else {
+        result['forecasts'] = []; // Empty array if forecast data doesn't exist
+      }
+
+      // Fetch forecast data
+      final DocumentSnapshot hourlyDoc = await hourlyRef.doc(dbUserID).get();
+
+      if (hourlyDoc.exists) {
+        final hourlyData = hourlyDoc.data() as Map<String, dynamic>;
+        // Ensure 'hourly' key exists in the map before accessing its value
+        result['hourly'] =
+            hourlyData.containsKey('hourly') ? hourlyData['hourly'] : [];
+      } else {
+        result['hourly'] = [];
+      }
+
+      final weather = Weather.fromFBDatabase(result);
+
+      return weather;
     } catch (e) {
-      throw GenericError(message: e);
+      throw GenericError(message: e.toString());
     }
   }
 
   Future<void> addWeatherToDatabase({
     required Weather weather,
+    required List<Forecast> forecast,
+    required List<Hourly> hourly,
     required String dbUserID,
   }) async {
     // Convert the Weather object to a Map using toJson
     final weatherData = weather.toJson();
-    // Add the weather data to Firestore with an auto-generated document ID
-    await weatherRef.doc(dbUserID).set(weatherData);
+
+    final forecastDataList =
+        forecast.map((forecastItem) => forecastItem.toJson()).toList();
+
+    final hourlyDataList =
+        hourly.map((hourlyItem) => hourlyItem.toJson()).toList();
+
+    try {
+      // Add the weather data to Firestore with an auto-generated document ID
+      await weatherRef.doc(dbUserID).set(weatherData);
+
+      // Add the forecast data to Firestore with an auto-generated document ID
+      await forecastRef.doc(dbUserID).set({'forecasts': forecastDataList});
+
+      // Add the hourly data to Firestore with an auto-generated document ID
+      await hourlyRef.doc(dbUserID).set({'hourly': hourlyDataList});
+    } catch (e) {
+      print('Error adding weather data: $e');
+    }
   }
+
+/**
+ * Future<void> addWeatherToDatabase({
+  required Weather weather,
+  required List<Forecast> forecast,
+  required String dbUserID,
+}) async {
+  // Convert the Weather object to a Map using toJson
+  final weatherData = weather.toJson();
+
+  // Convert the forecast objects to a List of Maps using toJson
+  final forecastDataList = forecast.map((forecastItem) => forecastItem.toJson()).toList();
+
+  // Add the weather data and forecast list to Firestore in the same document
+  await forecastRef.doc(dbUserID).set({
+    'weather': weatherData,
+    'forecasts': forecastDataList,
+  });
+}
+ */
 
   Future<List<City>> getCitiesFromAPi(String inputQuery) async {
     // use a uri object instead of a direct url

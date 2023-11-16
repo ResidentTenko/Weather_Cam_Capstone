@@ -9,13 +9,19 @@ abstract class WeatherEvent extends Equatable {
 
 // we call this when we want to fetch weather by latitude and longitude
 class FetchWeatherFromLocationEvent extends WeatherEvent {}
+
 // we call this when we want to fetch weather from the database
 class FetchWeatherFromFBDatabaseEvent extends WeatherEvent {}
+
 // we call this when we want to refresh the weather information after loading from storage
-class FetchWeatherAfterLocalStorageRetrievalEvent extends WeatherEvent {}
+// which occurs on app start
+class FetchWeatherOnAppStartEvent extends WeatherEvent {}
+
+// we call this function when the user refreshes the screen
+// we also call this when the app comes from the background to the foreground
+class FetchWeatherOnAppRefreshEvent extends WeatherEvent {}
+
 // there is only one event releated to weather - get the weather information
-// this event is triggered the moment the state receives a query
-// this means when the app starts up and provides location data and when the user selects a city of choice
 class FetchWeatherEvent extends WeatherEvent {
   final String inputQuery;
 

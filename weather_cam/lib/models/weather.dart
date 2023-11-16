@@ -1,6 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:equatable/equatable.dart';
 import 'package:flutter_application/models/forecast.dart';
+
+import 'package:flutter_application/models/hourly_model.dart';
 
 class Weather extends Equatable {
   final String name;
@@ -10,10 +12,18 @@ class Weather extends Equatable {
   final double maxTemp;
   final double minTemp;
   final double feelsLike;
+  final int humidity;
+  final double visibility;
+  final double windSpeed;
+  final String windDirection;
+  final double uv;
+  final double pressure;
   // never replace the icon with forecast icon - forecast current condition is not always the same as actual condition
   final String icon;
   final int date;
+  final int localTime;
   final List<Forecast> forecast;
+  final List<Hourly> hourly;
 
   const Weather({
     required this.name,
@@ -23,9 +33,17 @@ class Weather extends Equatable {
     required this.maxTemp,
     required this.minTemp,
     required this.feelsLike,
+    required this.humidity,
+    required this.visibility,
+    required this.windSpeed,
+    required this.windDirection,
+    required this.uv,
+    required this.pressure,
     required this.icon,
     required this.date,
+    required this.localTime,
     required this.forecast,
+    required this.hourly,
   });
 
   // second default constructor
@@ -37,10 +55,18 @@ class Weather extends Equatable {
       temp: 200.0,
       maxTemp: 300.0,
       minTemp: 0.0,
+      humidity: 0,
+      visibility: 0.0,
+      windSpeed: 0.0,
+      windDirection: "True North",
+      uv: 0.0,
+      pressure: 0,
       feelsLike: 300.0,
       icon: 'No Icon',
       date: 0,
+      localTime: 0,
       forecast: [],
+      hourly: [],
     );
   }
 
@@ -55,6 +81,15 @@ class Weather extends Equatable {
     final forecastday_0 = json['forecast']['forecastday'][0];
     // grab the list under the keyword forecastday
     final forecastList = json['forecast']['forecastday'] as List<dynamic>;
+    // get our list data
+    final forecast = forecastList.map(
+      (forecastItem) {
+        return Forecast.fromApiJson(forecastItem as Map<String, dynamic>);
+      },
+    ).toList();
+
+    // Combine hours using a static method
+    final combinedHours = combineHoursFromForecasts(forecast);
 
     return Weather(
       name: location['name'] as String,
@@ -64,74 +99,120 @@ class Weather extends Equatable {
       maxTemp: forecastday_0['day']['maxtemp_f'] as double,
       minTemp: forecastday_0['day']['mintemp_f'] as double,
       feelsLike: current['feelslike_f'] as double,
+      humidity: current['humidity'],
+      visibility: current['vis_miles'],
+      windDirection: current['wind_dir'],
+      windSpeed: current['wind_mph'],
+      uv: current['uv'],
+      pressure: current['pressure_mb'],
       icon: current['condition']['icon'] as String,
-      date: location['localtime_epoch'] as int,
+      date: forecastday_0['date_epoch'] as int,
+      localTime: location['localtime_epoch'] as int,
       // take the list from the json, convert each item in the list to a Map<String, dynamic>
       // then convert that to our model using the fromJson function of forecast
       // take the returned model and make a list of forcast object
-      forecast: forecastList.map(
-        (forecastItem) {
-          return Forecast.fromApiJson(forecastItem as Map<String, dynamic>);
-        },
-      ).toList(), // then create a list of forecast objects
+      forecast: forecast,
+      hourly: combinedHours,
     );
   }
 
-  // construtor that we will use when loading values from the snapshot downloaded from firebase
-  factory Weather.fromStorageJson(Map<String, dynamic> json) {
+  static List<Hourly> combineHoursFromForecasts(List<Forecast> forecasts) {
+    List<Hourly> combinedHours = [];
 
+    for (var forecast in forecasts) {
+      combinedHours.addAll(forecast.hourly);
+    }
+    return combinedHours;
+  }
+
+  // construtor that we will use when loading values from the hydrated storage
+  factory Weather.fromStorageJson(Map<String, dynamic> json) {
     final tempValue = json['temp'];
     final maxTempValue = json['maxTemp'];
     final minTempValue = json['minTemp'];
     final feelsLikeValue = json['feelsLike'];
+    final humidityValue = json['humidity'];
+    final visibilityValue = json['visibility'];
+    final windSpeedValue = json['windSpeed'];
+    final uvValue = json['uv'];
+    final pressureValue = json['pressure'];
     final storageForecastList = json['forecast'] as List<dynamic>;
-
+    final hourlyForecastList = json['hourly'] as List<dynamic>;
     return Weather(
       name: json['name'] as String,
       country: json['country'] as String,
       condition: json['condition'] as String,
       icon: json['icon'] as String,
       date: json['date'] as int,
+      localTime: json['localTime'] as int,
+      windDirection: json['windDirection'] as String,
       forecast: storageForecastList.map(
         (forecastItem) {
           return Forecast.fromStorageJson(forecastItem as Map<String, dynamic>);
         },
       ).toList(),
-      temp: tempValue is num ? tempValue.toDouble() : 0.0,
-      maxTemp: maxTempValue is num ? maxTempValue.toDouble() : 0.0,
-      minTemp: minTempValue is num ? minTempValue.toDouble() : 0.0,
-      feelsLike: feelsLikeValue is num ? feelsLikeValue.toDouble() : 0.0,
-    );
-  }
-
-  // construtor that we will use when loading values from the snapshot downloaded from firebase
-  factory Weather.fromFBDatabase(DocumentSnapshot weatherDoc) {
-    // a nullable type object is returned so cast it as a nullable map type
-    final dbWeatherData = weatherDoc.data() as Map<String, dynamic>?;
-    // grab the list under the keyword forecast
-    final dbWeatherForecastList = dbWeatherData!['forecast'] as List<dynamic>;
-    // the database has a list of Map<String, dyanmic> under the keyword forecast
-
-    final tempValue = dbWeatherData['temp'];
-    final maxTempValue = dbWeatherData['maxTemp'];
-    final minTempValue = dbWeatherData['minTemp'];
-    final feelsLikeValue = dbWeatherData['feelsLike'];
-
-    return Weather(
-      name: dbWeatherData['name'] as String,
-      country: dbWeatherData['country'] as String,
-      condition: dbWeatherData['condition'] as String,
-      icon: dbWeatherData['icon'] as String,
-      date: dbWeatherData['date'] as int,
-      forecast: dbWeatherForecastList.map(
-        (forecastItem) {
-          return Forecast.fromFBDatabase(forecastItem as Map<String, dynamic>);
+      hourly: hourlyForecastList.map(
+        (hourlyItem) {
+          return Hourly.fromStorageJson(hourlyItem as Map<String, dynamic>);
         },
       ).toList(),
       temp: tempValue is num ? tempValue.toDouble() : 0.0,
       maxTemp: maxTempValue is num ? maxTempValue.toDouble() : 0.0,
       minTemp: minTempValue is num ? minTempValue.toDouble() : 0.0,
       feelsLike: feelsLikeValue is num ? feelsLikeValue.toDouble() : 0.0,
+      humidity: humidityValue is num ? humidityValue.toInt() : 0,
+      visibility: visibilityValue is num ? visibilityValue.toDouble() : 0.0,
+      windSpeed: windSpeedValue is num ? windSpeedValue.toDouble() : 0.0,
+      uv: uvValue is num ? uvValue.toDouble() : 0.0,
+      pressure: pressureValue is num ? pressureValue.toDouble() : 0.0,
+    );
+  }
+
+  // construtor that we will use when loading values from the snapshot downloaded from firebase
+  factory Weather.fromFBDatabase(Map<String, dynamic> json) {
+    // a nullable type object is returned so cast it as a nullable map type
+    final dbWeatherData = json['weather'];
+    // grab the list under the keyword forecasts
+    final dbWeatherForecastList = json['forecasts'] as List<dynamic>;
+    // grab the list under the keyword hourly
+    final dbHourlyList = json['hourly'] as List<dynamic>;
+    final tempValue = dbWeatherData['temp'];
+    final maxTempValue = dbWeatherData['maxTemp'];
+    final minTempValue = dbWeatherData['minTemp'];
+    final feelsLikeValue = dbWeatherData['feelsLike'];
+    final humidityValue = dbWeatherData['humidity'];
+    final visibilityValue = dbWeatherData['visibility'];
+    final windSpeedValue = dbWeatherData['windSpeed'];
+    final uvValue = dbWeatherData['uv'];
+    final pressureValue = dbWeatherData['pressure'];
+
+    return Weather(
+      name: dbWeatherData['name'] as String,
+      country: dbWeatherData['country'] as String,
+      condition: dbWeatherData['condition'] as String,
+      windDirection: dbWeatherData['windDirection'] as String,
+      icon: dbWeatherData['icon'] as String,
+      date: dbWeatherData['date'] as int,
+      localTime: dbWeatherData['localTime'] as int,
+      forecast: dbWeatherForecastList.map(
+        (forecastItem) {
+          return Forecast.fromFBDatabase(forecastItem as Map<String, dynamic>);
+        },
+      ).toList(),
+      hourly: dbHourlyList.map(
+        (hourlyItem) {
+          return Hourly.fromFBDatabase(hourlyItem as Map<String, dynamic>);
+        },
+      ).toList(),
+      temp: tempValue is num ? tempValue.toDouble() : 0.0,
+      maxTemp: maxTempValue is num ? maxTempValue.toDouble() : 0.0,
+      minTemp: minTempValue is num ? minTempValue.toDouble() : 0.0,
+      feelsLike: feelsLikeValue is num ? feelsLikeValue.toDouble() : 0.0,
+      humidity: humidityValue is num ? humidityValue.toInt() : 0,
+      visibility: visibilityValue is num ? visibilityValue.toDouble() : 0.0,
+      windSpeed: windSpeedValue is num ? windSpeedValue.toDouble() : 0.0,
+      uv: uvValue is num ? uvValue.toDouble() : 0.0,
+      pressure: pressureValue is num ? pressureValue.toDouble() : 0.0,
     );
   }
 
@@ -146,15 +227,45 @@ class Weather extends Equatable {
       'maxTemp': maxTemp,
       'minTemp': minTemp,
       'feelsLike': feelsLike,
+      'humidity': humidity,
+      'visibility': visibility,
+      'windSpeed': windSpeed,
+      'windDirection': windDirection,
+      'uv': uv,
+      'pressure': pressure,
       'icon': icon,
       'date': date,
-      // take each forecast object from the forecast list
-      // send them to the toJson function of forecast - this function converts each object to a Map<String, dynamic>
-      // Each map is then returned and added to a list in the form of forecast: [{},{},{}]
-      // so forecast is the key word and it has a list of maps as the value
-      'forecast':
-          forecast.map((forecastItem) => forecastItem.toJson()).toList(),
+      'localTime': localTime,
     };
+  }
+
+  // convert our forecast model back to Json for local Stroage
+  Map<String, dynamic> toStorageJson() {
+    return {
+      'name': name,
+      'country': country,
+      'condition': condition,
+      'temp': temp,
+      'maxTemp': maxTemp,
+      'minTemp': minTemp,
+      'feelsLike': feelsLike,
+      'humidity': humidity,
+      'visibility': visibility,
+      'windSpeed': windSpeed,
+      'windDirection': windDirection,
+      'uv': uv,
+      'pressure': pressure,
+      'icon': icon,
+      'date': date,
+      'localTime': localTime,
+      'forecast': forecast.map((forecastItem) => forecastItem.toJson()).toList(),
+      'hourly': hourly.map((hourlyItem) => hourlyItem.toJson()).toList(),
+    };
+  }
+
+  @override
+  String toString() {
+    return 'Weather Model Data-: (name: $name, country: $country, condition: $condition, temp: $temp, maxTemp: $maxTemp, minTemp: $minTemp, feelsLike: $feelsLike, icon: $icon, date: $date, localTime, $localTime, forecast: $forecast, hourly: $hourly)';
   }
 
   @override
@@ -167,15 +278,18 @@ class Weather extends Equatable {
       maxTemp,
       minTemp,
       feelsLike,
+      humidity,
+      visibility,
+      windSpeed,
+      windDirection,
+      uv,
+      pressure,
       icon,
+      date,
+      localTime,
       forecast,
-      //  date,
+      hourly,
     ];
-  }
-
-  @override
-  String toString() {
-    return 'Weather(name: $name, country: $country, condition: $condition, temp: $temp, maxTemp: $maxTemp, minTemp: $minTemp, feelsLike: $feelsLike, icon: $icon, , date: $date, forecast: $forecast)';
   }
 
   Weather copyWith({
@@ -186,9 +300,17 @@ class Weather extends Equatable {
     double? maxTemp,
     double? minTemp,
     double? feelsLike,
+    int? humidity,
+    double? visibility,
+    double? windSpeed,
+    String? windDirection,
+    double? uv,
+    double? pressure,
     String? icon,
     int? date,
+    int? localTime,
     List<Forecast>? forecast,
+    List<Hourly>? hourly,
   }) {
     return Weather(
       name: name ?? this.name,
@@ -198,10 +320,17 @@ class Weather extends Equatable {
       maxTemp: maxTemp ?? this.maxTemp,
       minTemp: minTemp ?? this.minTemp,
       feelsLike: feelsLike ?? this.feelsLike,
+      humidity: humidity ?? this.humidity,
+      visibility: visibility ?? this.visibility,
+      windSpeed: windSpeed ?? this.windSpeed,
+      windDirection: windDirection ?? this.windDirection,
+      uv: uv ?? this.uv,
+      pressure: pressure ?? this.pressure,
       icon: icon ?? this.icon,
       date: date ?? this.date,
+      localTime: localTime ?? this.localTime,
       forecast: forecast ?? this.forecast,
+      hourly: hourly ?? this.hourly,
     );
   }
 }
-// date: DateTime.fromMillisecondsSinceEpoch(forecastday_0['date_epoch'] * 1000,isUtc: true,),

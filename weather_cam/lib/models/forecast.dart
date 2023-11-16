@@ -1,46 +1,68 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter_application/models/hourly_model.dart';
 
 class Forecast extends Equatable {
-  final double maxTemp;
-  final double minTemp;
-  final String icon;
+  final double forecastMaxTemp;
+  final double forecastMinTemp;
+  final String forecastConditon;
+  final String forecastIcon;
   final int forecastDate;
+  final List<Hourly> hourly;
+
   const Forecast({
-    required this.maxTemp,
-    required this.minTemp,
-    required this.icon,
+    required this.forecastMaxTemp,
+    required this.forecastMinTemp,
+    required this.forecastConditon,
+    required this.forecastIcon,
     required this.forecastDate,
+    required this.hourly,
   });
 
   factory Forecast.initial() {
     return const Forecast(
-      maxTemp: 6000.0,
-      minTemp: 0.00,
-      icon: '',
+      forecastMaxTemp: 6000.0,
+      forecastMinTemp: 0.00,
+      forecastConditon: '',
+      forecastIcon: '',
       forecastDate: 0,
+      hourly: [],
     );
   }
 
-  // construtor that we will use when loading values from Json
+  // construtor that we will use when loading values from Api Json
   factory Forecast.fromApiJson(Map<String, dynamic> json) {
     // we don't need to dig down any further since we are fed a list that has already dug down to the level we need
     // we instead dig from the current level
+    final dailyValues = json['day'];
+    final hourlyValues = json['hour'] as List<dynamic>;
+
     return Forecast(
-      maxTemp: json['day']['maxtemp_f'] as double,
-      minTemp: json['day']['mintemp_f'] as double,
-      icon: json['day']['condition']['icon'] as String,
+      forecastMaxTemp: dailyValues['maxtemp_f'] as double,
+      forecastMinTemp: dailyValues['mintemp_f'] as double,
+      forecastConditon: dailyValues['condition']['text'] as String,
+      forecastIcon: dailyValues['condition']['icon'] as String,
       forecastDate: json['date_epoch'] as int,
+      hourly: hourlyValues.map(
+        (hourlyItem) {
+          return Hourly.fromApiJson(hourlyItem as Map<String, dynamic>);
+        },
+      ).toList(),
     );
   }
 
+  // construtor that we will use when loading values from local storage json
   factory Forecast.fromStorageJson(Map<String, dynamic> json) {
-    final maxTemp = json['maxTemp'];
-    final minTemp = json['minTemp'];
+    final forecastMaxTemp = json['forecastMaxTemp'];
+    final forecastMinTemp = json['forecastMinTemp'];
     return Forecast(
-      icon: json['icon'] as String,
+      forecastConditon: json['forecastConditon'] as String,
+      forecastIcon: json['forecastIcon'] as String,
       forecastDate: json['forecastDate'] as int,
-      maxTemp: maxTemp is num ? maxTemp.toDouble() : 0.0,
-      minTemp: minTemp is num ? minTemp.toDouble() : 0.0,
+      forecastMaxTemp:
+          forecastMaxTemp is num ? forecastMaxTemp.toDouble() : 0.0,
+      forecastMinTemp:
+          forecastMinTemp is num ? forecastMinTemp.toDouble() : 0.0,
+      hourly: const [],
     );
   }
 
@@ -51,13 +73,18 @@ class Forecast extends Equatable {
     /// has a discrepancy because it is expecting double values. The console itself won't show me the error
     /// So let me account for any num changes on the datbase end
 
-    final maxTemp = dbData['maxTemp'];
-    final minTemp = dbData['minTemp'];
+    final forecastMaxTemp = dbData['forecastMaxTemp'];
+    final forecastMinTemp = dbData['forecastMinTemp'];
+
     return Forecast(
-      icon: dbData['icon'] as String,
+      forecastConditon: dbData['forecastConditon'] as String,
+      forecastIcon: dbData['forecastIcon'] as String,
       forecastDate: dbData['forecastDate'] as int,
-      maxTemp: maxTemp is num ? maxTemp.toDouble() : 0.0,
-      minTemp: minTemp is num ? minTemp.toDouble() : 0.0,
+      forecastMaxTemp:
+          forecastMaxTemp is num ? forecastMaxTemp.toDouble() : 0.0,
+      forecastMinTemp:
+          forecastMinTemp is num ? forecastMinTemp.toDouble() : 0.0,
+      hourly: const [],
     );
   }
 
@@ -65,32 +92,38 @@ class Forecast extends Equatable {
   // The return is a map with String keys and dynamic values
   Map<String, dynamic> toJson() {
     return {
-      'maxTemp': maxTemp,
-      'minTemp': minTemp,
-      'icon': icon,
+      'forecastMaxTemp': forecastMaxTemp,
+      'forecastMinTemp': forecastMinTemp,
+      'forecastConditon': forecastConditon,
+      'forecastIcon': forecastIcon,
       'forecastDate': forecastDate,
     };
   }
 
   @override
-  List<Object> get props => [maxTemp, minTemp, icon];
+  List<Object> get props =>
+      [forecastMaxTemp, forecastMinTemp, forecastConditon, forecastIcon];
 
   @override
   String toString() {
-    return ('maxTemp: $maxTemp, minTemp: $minTemp, icon: $icon, forecastDate: $forecastDate');
+    return 'Forecast Model Data-: (forecastMaxTemp: $forecastMaxTemp, forecastMinTemp: $forecastMinTemp, forecastIcon: $forecastIcon, forecastConditon: $forecastConditon, forecastDate: $forecastDate, hourly: $hourly)';
   }
 
   Forecast copyWith({
-    double? maxTemp,
-    double? minTemp,
-    String? icon,
+    double? forecastMaxTemp,
+    double? forecastMinTemp,
+    String? forecastConditon,
+    String? forecastIcon,
     int? forecastDate,
+    List<Hourly>? hourly,
   }) {
     return Forecast(
-      maxTemp: maxTemp ?? this.maxTemp,
-      minTemp: minTemp ?? this.minTemp,
-      icon: icon ?? this.icon,
+      forecastMaxTemp: forecastMaxTemp ?? this.forecastMaxTemp,
+      forecastMinTemp: forecastMinTemp ?? this.forecastMinTemp,
+      forecastConditon: forecastConditon ?? this.forecastConditon,
+      forecastIcon: forecastIcon ?? this.forecastIcon,
       forecastDate: forecastDate ?? this.forecastDate,
+      hourly: hourly ?? this.hourly,
     );
   }
 }

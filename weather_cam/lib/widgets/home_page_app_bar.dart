@@ -14,79 +14,76 @@ class HomePageAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0.0,
       backgroundColor: Colors.transparent,
       actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 10.0),
-          child: Builder(
-            builder: (context) {
-              return PopupMenuButton<int>(
-                icon:
-                    const Icon(Icons.more_vert, color: Colors.white, size: 35),
-                itemBuilder: (context) => [
-                  const PopupMenuItem(
-                    value: 1,
-                    child: Row(
-                      children: [
-                        Icon(Icons.photo_camera_front,
-                            color: Color(0xff955cd1)),
-                        SizedBox(width: 10),
-                        Text(
-                          "LiveCam",
-                          style: TextStyle(
-                              color: Color(0xff955cd1),
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
+        Builder(
+          builder: (context) {
+            return PopupMenuButton<int>(
+              icon:
+                  const Icon(Icons.more_vert, color: Colors.white, size: 35),
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 1,
+                  child: Row(
+                    children: [
+                      Icon(Icons.photo_camera_front,
+                          color: Color(0xff955cd1)),
+                      SizedBox(width: 10),
+                      Text(
+                        "LiveCam",
+                        style: TextStyle(
+                            color: Color(0xff955cd1),
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
-                  PopupMenuItem(
-                    value: 2,
-                    child: Row(
-                      children: [
-                        const Icon(Icons.thermostat, color: Color(0xff955cd1)),
-                        const SizedBox(width: 10),
-                        Text(
-                          context.read<TempSettingsCubit>().state.tempUnit ==
-                                  TempUnit.celsius
-                              ? "°F"
-                              : "°C",
-                          style: const TextStyle(
-                              color: Color(0xff955cd1),
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
+                ),
+                PopupMenuItem(
+                  value: 2,
+                  child: Row(
+                    children: [
+                      const Icon(Icons.thermostat, color: Color(0xff955cd1)),
+                      const SizedBox(width: 10),
+                      Text(
+                        context.read<TempSettingsCubit>().state.tempUnit ==
+                                TempUnit.celsius
+                            ? "°F"
+                            : "°C",
+                        style: const TextStyle(
+                            color: Color(0xff955cd1),
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
-                  const PopupMenuItem(
-                    value: 3,
-                    child: Row(
-                      children: [
-                        Icon(Icons.logout, color: Color(0xff955cd1)),
-                        SizedBox(width: 10),
-                        Text(
-                          "Logout",
-                          style: TextStyle(
-                              color: Color(0xff955cd1),
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
+                ),
+                const PopupMenuItem(
+                  value: 3,
+                  child: Row(
+                    children: [
+                      Icon(Icons.logout, color: Color(0xff955cd1)),
+                      SizedBox(width: 10),
+                      Text(
+                        "Logout",
+                        style: TextStyle(
+                            color: Color(0xff955cd1),
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
-                ],
-                onSelected: (value) {
-                  if (value == 1) {
-                    _openLiveCamPage(context);
-                  } else if (value == 2) {
-                    context.read<TempSettingsCubit>().toggleTempUnit();
-                  } else if (value == 3) {
-                    context.read<AuthBloc>().add(SignoutRequestedEvent());
-                  }
-                },
-              );
-            },
-          ),
+                ),
+              ],
+              onSelected: (value) {
+                if (value == 1) {
+                  _openLiveCamPage(context);
+                } else if (value == 2) {
+                  context.read<TempSettingsCubit>().toggleTempUnit();
+                } else if (value == 3) {
+                  context.read<AuthBloc>().add(SignoutRequestedEvent());
+                }
+              },
+            );
+          },
         ),
       ],
     );

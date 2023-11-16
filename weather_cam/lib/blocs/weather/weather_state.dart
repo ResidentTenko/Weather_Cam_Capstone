@@ -66,7 +66,7 @@ class WeatherState extends Equatable {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'status': status.toJson(),
-      'weather': weather.toJson(),
+      'weather': weather.toStorageJson(),
       'error': error.toJson(),
     };
   }

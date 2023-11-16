@@ -8,7 +8,6 @@ import 'package:flutter_application/services/location_services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
-
 part 'weather_event.dart';
 part 'weather_state.dart';
 
@@ -25,10 +24,10 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> with HydratedMixin {
           WeatherState.initial(),
         ) {
     on<FetchWeatherEvent>(_fetchWeather);
-    on<FetchWeatherFromLocationEvent>(_fetchWeatherByLocation);
+    on<FetchWeatherFromLocationEvent>(_fetchWeatherFromLocation);
     on<FetchWeatherFromFBDatabaseEvent>(_fetchWeatherFromFBDatabase);
-    on<FetchWeatherAfterLocalStorageRetrievalEvent>(
-        _fetchWeatherAfterLocalStorageRetrieval);
+    on<FetchWeatherOnAppStartEvent>(_fetchWeatherOnAppStart);
+    on<FetchWeatherOnAppRefreshEvent>(_fetchWeatherOnRefresh);
   }
 
   // function implementations
@@ -64,7 +63,7 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> with HydratedMixin {
     }
   }
 
-  Future<void> _fetchWeatherByLocation(
+  Future<void> _fetchWeatherFromLocation(
     FetchWeatherFromLocationEvent event,
     Emitter<WeatherState> emit,
   ) async {
@@ -76,7 +75,7 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> with HydratedMixin {
     try {
       print("Weather State Before Emit: $state");
       // get the last known position (or current position if null)
-      final Position position = await locationServices.getLastKnownPosition();
+      final Position position = await locationServices.getCurrentPosition();
       final Weather weather = await apiWeatherRepository
           .setWeather('${position.latitude}, ${position.longitude}');
       // load the weather into the state and emit it
@@ -129,8 +128,8 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> with HydratedMixin {
     }
   }
 
-  Future<void> _fetchWeatherAfterLocalStorageRetrieval(
-    FetchWeatherAfterLocalStorageRetrievalEvent event,
+  Future<void> _fetchWeatherOnAppStart(
+    FetchWeatherOnAppStartEvent event,
     Emitter<WeatherState> emit,
   ) async {
     // the status from the storage should be loaded
@@ -146,8 +145,32 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> with HydratedMixin {
           weather: weather,
         ),
       );
-      print("Weather State After Retrieval Opeartion: $state");
+      print("Weather State After App Restart Event: $state");
       // handle our exceptions and errors
+    } on GenericError catch (e) {
+      emit(
+        state.copyWith(
+          status: WeatherStatus.error,
+          error: e,
+        ),
+      );
+    }
+  }
+
+  Future<void> _fetchWeatherOnRefresh(
+    FetchWeatherOnAppRefreshEvent event,
+    Emitter<WeatherState> emit,
+  ) async {
+    print('${state.weather.name}, ${state.weather.country}');
+    try {
+      // the status should be loaded - but we check for it just in case the user
+      // puts the app in the background before full loading
+      final Weather weather = await apiWeatherRepository
+          .setWeather('${state.weather.name}, ${state.weather.country}');
+
+      // emit the new state
+      emit(state.copyWith(weather: weather));
+      print("Weather State After App Refresh Event: $state");
     } on GenericError catch (e) {
       emit(
         state.copyWith(
@@ -163,7 +186,6 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> with HydratedMixin {
   @override
   WeatherState? fromJson(Map<String, dynamic> json) {
     try {
-      print('Weather from storage: $json');
       // uses the fromJson method of WeatherState class
       final weatherState = WeatherState.fromJson(json);
       print('WeatherState after Json to State Conversion: $weatherState');
@@ -178,10 +200,9 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> with HydratedMixin {
   @override
   Map<String, dynamic>? toJson(WeatherState state) {
     if (state.status == WeatherStatus.loaded) {
-      print('Weather state to storage: $state');
       // uses the toJson method of WeatherState class
       final weatherJson = state.toJson();
-      print('WeatherJson after State to Json Conversion: $weatherJson');
+      print('WeatherJson after State to Json/Storage Conversion: $weatherJson');
       // returns the json
       return weatherJson;
     } else {
