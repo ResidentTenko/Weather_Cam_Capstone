@@ -1,3 +1,5 @@
+// ignore_for_file: library_prefixes
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_application/errors/auth_error.dart';

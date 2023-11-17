@@ -145,7 +145,7 @@ class _SigninPage extends State<SigninPage> {
                             : _submit,
                         child: state.signinStatus == SigninStatus.submitting
                             ? CircularProgressIndicator() // Show loading indicator when submitting
-                            : Container(
+                            : SizedBox(
                                 width: 100, // Set your desired width
                                 height: 120, // Set your desired height
                                 child: Image.asset('assets/images/login.png',

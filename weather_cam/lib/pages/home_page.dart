@@ -52,6 +52,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     // Check if the WeatherStatus is loaded from Hydrated Bloc
     if (context.read<WeatherBloc>().state.status == WeatherStatus.loaded) {
       // update the weather at the current user location
+      
       context.read<WeatherBloc>().add(FetchWeatherOnAppStartEvent());
     }
     // Else no local storage so fetch the weather information at the current location

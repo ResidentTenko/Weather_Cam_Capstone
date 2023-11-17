@@ -1,3 +1,5 @@
+// ignore_for_file: library_prefixes
+
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
