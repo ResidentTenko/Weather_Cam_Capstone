@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/blocs/temp_settings/temp_settings_cubit.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:flutter_application/blocs/weather/weather_bloc.dart';
 import 'package:flutter_application/widgets/home_page_app_bar.dart';
 import 'package:flutter_application/widgets/hourly_forecast_widget.dart';
@@ -52,7 +53,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     // Check if the WeatherStatus is loaded from Hydrated Bloc
     if (context.read<WeatherBloc>().state.status == WeatherStatus.loaded) {
       // update the weather at the current user location
-      
+
       context.read<WeatherBloc>().add(FetchWeatherOnAppStartEvent());
     }
     // Else no local storage so fetch the weather information at the current location
@@ -110,7 +111,21 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             builder: (context, state) {
               if (state.status == WeatherStatus.loading ||
                   state.status == WeatherStatus.initial) {
-                return const Center(child: CircularProgressIndicator());
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset('assets/images/icon2.png',
+                          width: 200, height: 200),
+                      const SizedBox(height: 20),
+                      LoadingAnimationWidget.twistingDots(
+                        leftDotColor: Color(0xff3fa2fa),
+                        rightDotColor: const Color(0xFFFD5E53),
+                        size: 50,
+                      ),
+                    ],
+                  ),
+                );
               } else {
                 final tempUnit =
                     context.watch<TempSettingsCubit>().state.tempUnit;
@@ -226,10 +241,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                 height: 5,
                               ),
                               Padding(
-                                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                padding:
+                                    const EdgeInsets.fromLTRB(10, 0, 10, 0),
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    color: const Color.fromRGBO(149, 92, 209, 1),
+                                    color:
+                                        const Color.fromRGBO(149, 92, 209, 1),
                                     borderRadius: BorderRadius.circular(10.0),
                                     boxShadow: const [
                                       BoxShadow(
@@ -250,13 +267,16 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                     scrollDirection: Axis.horizontal,
                                     itemCount: 30,
                                     itemBuilder: (context, index) {
-                                      final hourly = state.weather.hourly[index];
+                                      final hourly =
+                                          state.weather.hourly[index];
                                       final lowerHourBound =
                                           state.weather.localTime - 3600;
                                       final upperHourBound =
                                           state.weather.localTime + (3600 * 24);
-                                      if ((hourly.hourlyTime > lowerHourBound) &&
-                                          (hourly.hourlyTime < upperHourBound)) {
+                                      if ((hourly.hourlyTime >
+                                              lowerHourBound) &&
+                                          (hourly.hourlyTime <
+                                              upperHourBound)) {
                                         return HourlyForecast(
                                           hourlyTime: hourly.hourlyTime,
                                           hourlyIcon: hourly.hourlyIcon,
@@ -289,10 +309,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                 scrollDirection: Axis.vertical,
                                 itemCount: state.weather.forecast.length,
                                 itemBuilder: (context, index) {
-                                  final forecast = state.weather.forecast[index];
+                                  final forecast =
+                                      state.weather.forecast[index];
                                   return ThreeDaysForecast(
                                     forecastDay: forecast.forecastDate,
-                                    forecastCondition: forecast.forecastConditon,
+                                    forecastCondition:
+                                        forecast.forecastConditon,
                                     forecastIcon: forecast.forecastIcon,
                                     forcastMinTemp:
                                         '${convertTemperature(forecast.forecastMinTemp, tempUnit).round()}°',
@@ -354,7 +376,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                     child: WeatherDetails(
                                       detailIcon: Icons.wb_sunny_outlined,
                                       detailTitle: 'UV',
-                                      detailValue: '${state.weather.uv.round()}',
+                                      detailValue:
+                                          '${state.weather.uv.round()}',
                                     ),
                                   ),
                                 ],

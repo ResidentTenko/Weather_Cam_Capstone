@@ -13,10 +13,18 @@ class LiveCamSelect extends StatelessWidget {
       width: size.width,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xff955cd1), Color(0xff3fa2fa)],
-          begin: Alignment.bottomCenter,
-          end: Alignment.topCenter,
-          stops: [0.3, 0.85],
+          colors: [
+            Color(0xff3fa2fa),
+            Color(0xFF7F8DA2),
+            Color(0xFFFD5E53),
+          ],
+          stops: [
+            0.33,
+            0.66,
+            0.99,
+          ], // Adjust stops based on your preference
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
         ),
       ),
       child: Scaffold(
@@ -122,14 +130,21 @@ class YoutubePlayerScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xff955cd1), Color(0xff3fa2fa)],
-            begin: Alignment.bottomCenter,
-            end: Alignment.topCenter,
-            stops: [0.3, 0.85],
+            colors: [
+              Color(0xff3fa2fa),
+              Color(0xFF7F8DA2),
+              Color(0xFFFD5E53),
+            ],
+            stops: [
+              0.33,
+              0.66,
+              0.99,
+            ], // Adjust stops based on your preference
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
         ),
         child: YoutubePlayerBuilder(

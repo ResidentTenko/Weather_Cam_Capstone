@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/blocs/signup/signup_cubit.dart';
 import 'package:flutter_application/blocs/signup/signup_state.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:flutter_application/utils/error_dialog.dart';
 import 'package:validators/validators.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,12 +50,20 @@ class _SignupPageState extends State<SignupPage> {
         builder: (context, state) {
           return Scaffold(
               body: Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: const [Color(0xff955cd1), Color(0xff3fa2fa)],
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-                stops: const [0.3, 0.85],
+                colors: [
+                  Color(0xff3fa2fa),
+                  Color(0xFF7F8DA2),
+                  Color(0xFFFD5E53),
+                ],
+                stops: [
+                  0.33,
+                  0.66,
+                  0.99,
+                ], // Adjust stops based on your preference
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
               ),
             ),
             child: Center(
@@ -202,7 +211,13 @@ class _SignupPageState extends State<SignupPage> {
                           ? null
                           : _submit,
                       child: state.signupStatus == SignupStatus.submitting
-                          ? CircularProgressIndicator() // Show loading indicator when submitting
+                          ? Center(
+                              child: LoadingAnimationWidget.twistingDots(
+                                leftDotColor: Color(0xff3fa2fa),
+                                rightDotColor: const Color(0xFFFD5E53),
+                                size: 50,
+                              ),
+                            ) // Show loading indicator when submitting
                           : Image.asset(
                               'assets/images/signup.png',
                               width: 100, // Set your width
