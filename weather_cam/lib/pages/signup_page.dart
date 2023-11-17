@@ -69,11 +69,11 @@ class _SignupPageState extends State<SignupPage> {
                   children: [
                     Image.asset(
                       'assets/images/sunny.png',
-                      width: 250,
-                      height: 250,
+                      width: 150,
+                      height: 150,
                     ),
                     SizedBox(
-                      height: 20.0,
+                      height: 10.0,
                     ),
                     TextFormField(
                       keyboardType: TextInputType.emailAddress,
@@ -82,7 +82,15 @@ class _SignupPageState extends State<SignupPage> {
                           border: OutlineInputBorder(),
                           filled: true,
                           labelText: 'Name',
-                          prefixIcon: Icon(Icons.account_box)),
+                          prefixIcon: Padding(
+                            padding: EdgeInsets.all(5),
+                            child: SizedBox(
+                              width: 50,
+                              height: 60,
+                              child: Image.asset('assets/images/name.png',
+                                  fit: BoxFit.contain),
+                            ),
+                          )),
                       validator: (String? value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'Name is required';
@@ -106,7 +114,15 @@ class _SignupPageState extends State<SignupPage> {
                           border: OutlineInputBorder(),
                           filled: true,
                           labelText: 'Email',
-                          prefixIcon: Icon(Icons.email)),
+                          prefixIcon: Padding(
+                            padding: EdgeInsets.all(5),
+                            child: SizedBox(
+                              width: 60,
+                              height: 60,
+                              child: Image.asset('assets/images/email.png',
+                                  fit: BoxFit.contain),
+                            ),
+                          )),
                       validator: (String? value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'Email is required';
@@ -130,7 +146,15 @@ class _SignupPageState extends State<SignupPage> {
                           border: OutlineInputBorder(),
                           filled: true,
                           labelText: 'Password',
-                          prefixIcon: Icon(Icons.lock)),
+                          prefixIcon: Padding(
+                            padding: EdgeInsets.all(5),
+                            child: SizedBox(
+                              width: 60,
+                              height: 60,
+                              child: Image.asset('assets/images/password.png',
+                                  fit: BoxFit.contain),
+                            ),
+                          )),
                       validator: (String? value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'Password required';
@@ -153,7 +177,15 @@ class _SignupPageState extends State<SignupPage> {
                           border: OutlineInputBorder(),
                           filled: true,
                           labelText: 'Confirm Password',
-                          prefixIcon: Icon(Icons.lock)),
+                          prefixIcon: Padding(
+                            padding: EdgeInsets.all(5),
+                            child: SizedBox(
+                              width: 60,
+                              height: 60,
+                              child: Image.asset('assets/images/password.png',
+                                  fit: BoxFit.contain),
+                            ),
+                          )),
                       validator: (String? value) {
                         if (_passwordController.text != value) {
                           return 'password not match';
@@ -165,25 +197,20 @@ class _SignupPageState extends State<SignupPage> {
                         _password = value;
                       },
                     ),
-                    SizedBox(
-                      height: 20.0,
-                    ),
-                    ElevatedButton(
-                      onPressed: state.signupStatus == SignupStatus.submitting
+                    InkWell(
+                      onTap: state.signupStatus == SignupStatus.submitting
                           ? null
                           : _submit,
-                      child: Text(state.signupStatus == SignupStatus.submitting
-                          ? 'Loading ..'
-                          : 'Sign Up'),
-                      style: ElevatedButton.styleFrom(
-                          textStyle: TextStyle(
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.yellow),
-                          padding: const EdgeInsets.symmetric(vertical: 10.0)),
+                      child: state.signupStatus == SignupStatus.submitting
+                          ? CircularProgressIndicator() // Show loading indicator when submitting
+                          : Image.asset(
+                              'assets/images/signup.png',
+                              width: 100, // Set your width
+                              height: 100, // Set your height
+                            ),
                     ),
                     SizedBox(
-                      height: 20.0,
+                      height: 10.0,
                     ),
                     TextButton(
                       onPressed: state.signupStatus == SignupStatus.submitting

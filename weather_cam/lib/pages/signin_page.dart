@@ -72,8 +72,8 @@ class _SigninPage extends State<SigninPage> {
                     children: [
                       Image.asset(
                         'assets/images/sunny.png',
-                        width: 250,
-                        height: 250,
+                        width: 150,
+                        height: 150,
                       ),
                       SizedBox(
                         height: 20.0,
@@ -82,10 +82,19 @@ class _SigninPage extends State<SigninPage> {
                         keyboardType: TextInputType.emailAddress,
                         autocorrect: false,
                         decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            filled: true,
-                            labelText: 'Email',
-                            prefixIcon: Icon(Icons.email)),
+                          border: OutlineInputBorder(),
+                          filled: true,
+                          labelText: 'Email',
+                          prefixIcon: Padding(
+                            padding: EdgeInsets.all(5),
+                            child: SizedBox(
+                              width: 60,
+                              height: 60,
+                              child: Image.asset('assets/images/email.png',
+                                  fit: BoxFit.contain),
+                            ),
+                          ),
+                        ),
                         validator: (String? value) {
                           if (value == null || value.trim().isEmpty) {
                             return 'Email is required';
@@ -108,7 +117,15 @@ class _SigninPage extends State<SigninPage> {
                             border: OutlineInputBorder(),
                             filled: true,
                             labelText: 'Password',
-                            prefixIcon: Icon(Icons.lock)),
+                            prefixIcon: Padding(
+                              padding: EdgeInsets.all(5),
+                              child: SizedBox(
+                                width: 60,
+                                height: 60,
+                                child: Image.asset('assets/images/password.png',
+                                    fit: BoxFit.contain),
+                              ),
+                            )),
                         validator: (String? value) {
                           if (value == null || value.trim().isEmpty) {
                             return 'Password required';
@@ -122,54 +139,64 @@ class _SigninPage extends State<SigninPage> {
                           _password = value;
                         },
                       ),
-                      SizedBox(
-                        height: 20.0,
-                      ),
-                      ElevatedButton(
-                        onPressed: state.signinStatus == SigninStatus.submitting
+                      InkWell(
+                        onTap: state.signinStatus == SigninStatus.submitting
                             ? null
                             : _submit,
-                        child: Text(
-                          state.signinStatus == SigninStatus.submitting
-                              ? 'Loading ..'
-                              : 'Sign In',
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          textStyle: TextStyle(
-                              fontSize: 20.0, fontWeight: FontWeight.bold),
-                          padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        ),
+                        child: state.signinStatus == SigninStatus.submitting
+                            ? CircularProgressIndicator() // Show loading indicator when submitting
+                            : Container(
+                                width: 100, // Set your desired width
+                                height: 120, // Set your desired height
+                                child: Image.asset('assets/images/login.png',
+                                    fit: BoxFit.contain),
+                              ),
                       ),
                       SizedBox(
                         height: 5.0,
                       ),
-                      TextButton(
-                        onPressed: () {
-                          context.read<SigninCubit>().signInWithGoogle();
-                        },
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Image.asset('assets/images/google.png',
-                                height: 140.0),
-                            Image.asset('assets/images/facebook.png',
-                                height: 140.0),
-                          ],
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Expanded(
+                            child: TextButton(
+                              onPressed: () {
+                                context.read<SigninCubit>().signInWithGoogle();
+                              },
+                              child: Image.asset('assets/images/google.png',
+                                  height: 120.0),
+                            ),
+                          ),
+                          Expanded(
+                            child: TextButton(
+                              onPressed: () {
+                                context
+                                    .read<SigninCubit>()
+                                    .signInWithFacebook();
+                              },
+                              child: Image.asset('assets/images/facebook.png',
+                                  height: 120.0),
+                            ),
+                          ),
+                        ],
                       ),
                       TextButton(
                         onPressed: state.signinStatus == SigninStatus.submitting
                             ? null
                             : () {
                                 Navigator.pushNamed(
-                                    context, SignupPage.routeName);
+                                  context,
+                                  SignupPage.routeName,
+                                );
                               },
-                        child: Text('Not a member yet ? Sign Up!'),
+                        child: Text(
+                          'Not a member yet ? Sign Up!',
+                        ),
                         style: TextButton.styleFrom(
                             textStyle: TextStyle(
-                                fontSize: 20.0,
-                                decoration: TextDecoration.underline,
-                                color: Colors.yellow)),
+                          fontSize: 22.0,
+                          decoration: TextDecoration.underline,
+                        )),
                       )
                     ].reversed.toList(),
                   ),

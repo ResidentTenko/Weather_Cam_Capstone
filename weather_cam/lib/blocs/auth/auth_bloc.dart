@@ -1,13 +1,9 @@
-// ignore_for_file: library_prefixes
-
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_application/repositories/auth_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fbAuth;
-//The part directive is used to include the auth_event.dart and auth_state.dart files,
-//which likely contain the event and state definitions for this BLoC
 part 'auth_event.dart';
 part 'auth_state.dart';
 //This class is a BLoC (Business Logic Component) that handles authentication logic using the flutter_bloc package.
@@ -48,7 +44,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     //This block defines how the BLoC should handle the SignoutRequestedEvent.
     //When this event is received, the BLoC calls the signout method on the authRepository to log the user out.
     on<SignoutRequestedEvent>((event, emit) async {
-      await authRepository.signout();
+      try {
+        await authRepository.signout();
+        print('Sign out successful');
+        emit(AuthState.unauthenticated());
+      } catch (e) {
+        print('Sign out failed: $e');
+      }
     });
   }
 }

@@ -1,10 +1,8 @@
-//packageds
-// ignore_for_file: library_prefixes
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fbAuth;
 import 'package:flutter_application/constants/db_constant.dart';
 import 'package:flutter_application/errors/auth_error.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 // cloudfire store instance and a friebaseauth instance to communicate with firestore and firebase auth
 //firebaseFirestore is an instance of FirebaseFirestore, which is used for Firestore operations
@@ -17,6 +15,20 @@ class AuthRepository {
     required this.firebaseFirestore,
     required this.firebaseAuth,
   });
+
+  // Save Google signIn To fireStore
+  // save users within collection with document UID
+  Future<void> saveUserToFirestore({
+    required String name,
+    required String email,
+    required String uid,
+  }) async {
+    await firebaseFirestore.collection('users').doc(uid).set({
+      'name': name,
+      'email': email,
+      // if a document with user's UID already exists, dont create a new one
+    }, SetOptions(merge: true));
+  }
 
   // the return type is Stream<fbAuth.User?>, which means it's a stream that emits events of type fbAuth.User?.
   // ? => indicates that the user object can be null
@@ -97,6 +109,22 @@ class AuthRepository {
   }
 
   Future<void> signout() async {
-    await firebaseAuth.signOut();
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+
+    try {
+      // Sign out from Google
+      if (await googleSignIn.isSignedIn()) {
+        await googleSignIn.signOut();
+        print('User signed out from Google');
+      } else {
+        print('User was not signed in with Google');
+      }
+      // Now sign out from Firebase
+      await firebaseAuth.signOut();
+      print('User signed out from Firebase');
+    } catch (error) {
+      print('Error signing out: $error');
+      rethrow;
+    }
   }
 }

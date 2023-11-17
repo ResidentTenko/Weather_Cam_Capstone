@@ -1,0 +1,6 @@
+<resources>
+<string name="facebook_app_id">713755833998642</string>
+<string name="fb_login_protocol_scheme">fb713755833998642</string>
+<string name="facebook_client_token">39fae6dbc1d8cbda544a984ad8dacc1c</string>
+<string name="app_name">WeatherApp</string>
+</resources>

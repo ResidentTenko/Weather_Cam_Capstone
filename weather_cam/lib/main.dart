@@ -1,3 +1,4 @@
+// ignore_for_file: library_prefixes
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -22,12 +23,13 @@ import 'package:flutter_application/services/api_weather_services.dart';
 import 'package:flutter_application/services/location_services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fbAuth;
 
-
-Future <void> main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -89,6 +91,8 @@ class MyApp extends StatelessWidget {
           BlocProvider<SigninCubit>(
             create: (context) => SigninCubit(
               authRepository: context.read<AuthRepository>(),
+              googleSignIn: GoogleSignIn(),
+              firebaseAuth: fbAuth.FirebaseAuth.instance,
             ),
           ),
           BlocProvider<SignupCubit>(

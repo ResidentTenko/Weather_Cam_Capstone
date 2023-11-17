@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'auth_bloc.dart';
 
 //his enum defines three possible authentication statuses: unknown, authenticated, and unauthenticated
@@ -25,6 +24,10 @@ class AuthState extends Equatable {
   // It's a named constructor because it has a name (unknown) after the class name (AuthState).
   factory AuthState.unknown() {
     return const AuthState(authStatus: AuthStatus.unknown);
+  }
+  // Add this factory constructor
+  factory AuthState.unauthenticated() {
+    return const AuthState(authStatus: AuthStatus.unauthenticated);
   }
 
   //This override is part of the Equatable package. It defines which properties should be used to determine if two instances are equal.
