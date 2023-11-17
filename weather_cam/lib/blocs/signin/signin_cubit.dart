@@ -68,24 +68,17 @@ class SigninCubit extends Cubit<SigninState> {
     try {
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       if (googleUser != null) {
-        // Retrive auth details
         final GoogleSignInAuthentication googleAuth =
             await googleUser.authentication;
-        // authenticate the user with firebase
         final credential = fbAuth.GoogleAuthProvider.credential(
           accessToken: googleAuth.accessToken,
           idToken: googleAuth.idToken,
         );
 
-        // Sign in to Firebase with the Google user credentials/Authenticate usser in Firebase
         await firebaseAuth.signInWithCredential(credential);
 
-        // Get the signed-in user
-        final fbAuth.User? firebaseUser =
-            firebaseAuth.currentUser; // retrieve current user
+        final fbAuth.User? firebaseUser = firebaseAuth.currentUser;
         if (firebaseUser != null) {
-          // Save the user data in Firestore
-          // saveusertoFirestore
           await authRepository.saveUserToFirestore(
             name: firebaseUser.displayName ?? '',
             email: firebaseUser.email ?? '',
