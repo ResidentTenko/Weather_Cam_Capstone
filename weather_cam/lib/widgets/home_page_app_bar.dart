@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/blocs/auth/auth_bloc.dart';
 import 'package:flutter_application/blocs/temp_settings/temp_settings_cubit.dart';
+import 'package:flutter_application/blocs/weather/weather_bloc.dart';
 import 'package:flutter_application/pages/live_cam_select.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -21,6 +22,31 @@ class HomePageAppBar extends StatelessWidget implements PreferredSizeWidget {
               itemBuilder: (context) => [
                 PopupMenuItem(
                   value: 1,
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        'assets/images/home.png',
+                        width: 65,
+                        height: 65,
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      const Text(
+                        "Home",
+                        style: TextStyle(
+                          color: Color(
+                            0xff955cd1,
+                          ),
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 2,
                   child: Row(
                     children: [
                       Image.asset(
@@ -45,7 +71,7 @@ class HomePageAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                 ),
                 PopupMenuItem(
-                  value: 2,
+                  value: 3,
                   child: Row(
                     children: [
                       Image.asset(
@@ -62,17 +88,49 @@ class HomePageAppBar extends StatelessWidget implements PreferredSizeWidget {
                             ? "°F"
                             : "°C",
                         style: const TextStyle(
-                            color: Color(
-                              0xff955cd1,
-                            ),
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
+                          color: Color(
+                            0xff955cd1,
+                          ),
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
                 ),
                 PopupMenuItem(
-                  value: 3,
+                  value: 4,
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        'assets/images/speed.png',
+                        width: 65,
+                        height: 65,
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        context
+                                    .read<TempSettingsCubit>()
+                                    .state
+                                    .measurementUnit ==
+                                MeasurementUnit.kilometers
+                            ? "Mi"
+                            : "Km",
+                        style: const TextStyle(
+                          color: Color(
+                            0xff955cd1,
+                          ),
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 5,
                   child: Row(
                     children: [
                       Image.asset(
@@ -97,10 +155,16 @@ class HomePageAppBar extends StatelessWidget implements PreferredSizeWidget {
               ],
               onSelected: (value) {
                 if (value == 1) {
-                  _openLiveCamPage(context);
+                  context
+                      .read<WeatherBloc>()
+                      .add(FetchWeatherFromLocationEvent());
                 } else if (value == 2) {
-                  context.read<TempSettingsCubit>().toggleTempUnit();
+                  _openLiveCamPage(context);
                 } else if (value == 3) {
+                  context.read<TempSettingsCubit>().toggleTempUnit();
+                } else if (value == 4) {
+                  context.read<TempSettingsCubit>().toggleMeasurementUnit();
+                } else if (value == 5) {
                   context.read<AuthBloc>().add(SignoutRequestedEvent());
                 }
               },

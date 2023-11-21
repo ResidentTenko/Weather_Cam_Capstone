@@ -1,9 +1,17 @@
 // ignore_for_file: library_prefixes
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fbAuth;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:path_provider/path_provider.dart';
+
 import 'package:flutter_application/blocs/auth/auth_bloc.dart';
 import 'package:flutter_application/blocs/profile/profile_cubit.dart';
 import 'package:flutter_application/blocs/search/search_bloc.dart';
@@ -21,13 +29,6 @@ import 'package:flutter_application/repositories/profile_repository.dart';
 import 'package:flutter_application/repositories/weather_respository.dart';
 import 'package:flutter_application/services/api_weather_services.dart';
 import 'package:flutter_application/services/location_services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:http/http.dart';
-import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:firebase_auth/firebase_auth.dart' as fbAuth;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

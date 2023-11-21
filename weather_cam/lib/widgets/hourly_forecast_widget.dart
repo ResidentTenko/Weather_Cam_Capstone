@@ -1,9 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class HourlyForecast extends StatelessWidget {
-  final int hourlyTime;
+  final String hourlyTime;
   final String hourlyIcon;
   final String hourlyTemp;
 
@@ -37,12 +36,7 @@ class HourlyForecast extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
-              DateFormat('jm').format(
-                DateTime.fromMillisecondsSinceEpoch(
-                  hourlyTime * 1000,
-                  isUtc: true,
-                ).toLocal()
-              ),
+              hourlyTime,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 14,

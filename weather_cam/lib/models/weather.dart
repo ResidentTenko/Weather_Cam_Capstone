@@ -1,13 +1,14 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:equatable/equatable.dart';
-import 'package:flutter_application/models/forecast.dart';
 
+import 'package:flutter_application/models/forecast.dart';
 import 'package:flutter_application/models/hourly_model.dart';
 
 class Weather extends Equatable {
   final String name;
   final String country;
   final String condition;
+  final String region;
   final double temp;
   final double maxTemp;
   final double minTemp;
@@ -22,12 +23,14 @@ class Weather extends Equatable {
   final String icon;
   final int date;
   final int localTime;
+  final String timezone;
   final List<Forecast> forecast;
   final List<Hourly> hourly;
 
   const Weather({
     required this.name,
     required this.country,
+    required this.region,
     required this.condition,
     required this.temp,
     required this.maxTemp,
@@ -42,6 +45,7 @@ class Weather extends Equatable {
     required this.icon,
     required this.date,
     required this.localTime,
+    required this.timezone,
     required this.forecast,
     required this.hourly,
   });
@@ -51,6 +55,7 @@ class Weather extends Equatable {
     return const Weather(
       name: 'Blank City',
       country: 'Blank Country',
+      region: 'Blank Region',
       condition: 'Unknown',
       temp: 200.0,
       maxTemp: 300.0,
@@ -65,6 +70,7 @@ class Weather extends Equatable {
       icon: 'No Icon',
       date: 0,
       localTime: 0,
+      timezone: "",
       forecast: [],
       hourly: [],
     );
@@ -94,6 +100,7 @@ class Weather extends Equatable {
     return Weather(
       name: location['name'] as String,
       country: location['country'] as String,
+      region: location['region'] as String,
       condition: current['condition']['text'] as String,
       temp: current['temp_f'] as double,
       maxTemp: forecastday_0['day']['maxtemp_f'] as double,
@@ -108,6 +115,7 @@ class Weather extends Equatable {
       icon: current['condition']['icon'] as String,
       date: forecastday_0['date_epoch'] as int,
       localTime: location['localtime_epoch'] as int,
+      timezone: location['tz_id'] as String,
       // take the list from the json, convert each item in the list to a Map<String, dynamic>
       // then convert that to our model using the fromJson function of forecast
       // take the returned model and make a list of forcast object
@@ -142,9 +150,11 @@ class Weather extends Equatable {
       name: json['name'] as String,
       country: json['country'] as String,
       condition: json['condition'] as String,
+      region: json['region'] as String,
       icon: json['icon'] as String,
       date: json['date'] as int,
       localTime: json['localTime'] as int,
+      timezone: json['timezone'] as String,
       windDirection: json['windDirection'] as String,
       forecast: storageForecastList.map(
         (forecastItem) {
@@ -189,11 +199,13 @@ class Weather extends Equatable {
     return Weather(
       name: dbWeatherData['name'] as String,
       country: dbWeatherData['country'] as String,
+      region: dbWeatherData['region'] as String,
       condition: dbWeatherData['condition'] as String,
       windDirection: dbWeatherData['windDirection'] as String,
       icon: dbWeatherData['icon'] as String,
       date: dbWeatherData['date'] as int,
       localTime: dbWeatherData['localTime'] as int,
+      timezone: dbWeatherData['timezone'] as String,
       forecast: dbWeatherForecastList.map(
         (forecastItem) {
           return Forecast.fromFBDatabase(forecastItem as Map<String, dynamic>);
@@ -216,12 +228,13 @@ class Weather extends Equatable {
     );
   }
 
-  // convert our forecast model back to Json
+  // convert our forecast model back to Json (Used only for FB)
   // The return is a map with String keys and dynamic values
   Map<String, dynamic> toJson() {
     return {
       'name': name,
       'country': country,
+      'region': region,
       'condition': condition,
       'temp': temp,
       'maxTemp': maxTemp,
@@ -236,6 +249,7 @@ class Weather extends Equatable {
       'icon': icon,
       'date': date,
       'localTime': localTime,
+      'timezone': timezone,
     };
   }
 
@@ -244,6 +258,7 @@ class Weather extends Equatable {
     return {
       'name': name,
       'country': country,
+      'region': region,
       'condition': condition,
       'temp': temp,
       'maxTemp': maxTemp,
@@ -258,14 +273,16 @@ class Weather extends Equatable {
       'icon': icon,
       'date': date,
       'localTime': localTime,
-      'forecast': forecast.map((forecastItem) => forecastItem.toJson()).toList(),
+      'timezone': timezone,
+      'forecast':
+          forecast.map((forecastItem) => forecastItem.toJson()).toList(),
       'hourly': hourly.map((hourlyItem) => hourlyItem.toJson()).toList(),
     };
   }
 
   @override
   String toString() {
-    return 'Weather Model Data-: (name: $name, country: $country, condition: $condition, temp: $temp, maxTemp: $maxTemp, minTemp: $minTemp, feelsLike: $feelsLike, icon: $icon, date: $date, localTime, $localTime, forecast: $forecast, hourly: $hourly)';
+    return 'Weather Model Data-: (name: $name, country: $country, region: $region, condition: $condition, temp: $temp, maxTemp: $maxTemp, minTemp: $minTemp, feelsLike: $feelsLike, icon: $icon, date: $date, localTime, $localTime, timezone: $timezone, forecast: $forecast, hourly: $hourly)';
   }
 
   @override
@@ -273,6 +290,7 @@ class Weather extends Equatable {
     return [
       name,
       country,
+      region,
       condition,
       temp,
       maxTemp,
@@ -287,6 +305,7 @@ class Weather extends Equatable {
       icon,
       date,
       localTime,
+      timezone,
       forecast,
       hourly,
     ];
@@ -295,6 +314,7 @@ class Weather extends Equatable {
   Weather copyWith({
     String? name,
     String? country,
+    String? region,
     String? condition,
     double? temp,
     double? maxTemp,
@@ -309,12 +329,14 @@ class Weather extends Equatable {
     String? icon,
     int? date,
     int? localTime,
+    String? timezone,
     List<Forecast>? forecast,
     List<Hourly>? hourly,
   }) {
     return Weather(
       name: name ?? this.name,
       country: country ?? this.country,
+      region: region ?? this.region,
       condition: condition ?? this.condition,
       temp: temp ?? this.temp,
       maxTemp: maxTemp ?? this.maxTemp,
@@ -329,6 +351,7 @@ class Weather extends Equatable {
       icon: icon ?? this.icon,
       date: date ?? this.date,
       localTime: localTime ?? this.localTime,
+      timezone: timezone ?? this.timezone,
       forecast: forecast ?? this.forecast,
       hourly: hourly ?? this.hourly,
     );

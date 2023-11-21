@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
+
 import 'package:flutter_application/blocs/temp_settings/temp_settings_cubit.dart';
 import 'package:flutter_application/blocs/weather/weather_bloc.dart';
 import 'package:flutter_application/widgets/home_page_app_bar.dart';
@@ -6,8 +11,6 @@ import 'package:flutter_application/widgets/hourly_forecast_widget.dart';
 import 'package:flutter_application/widgets/three_days_forecast.dart';
 import 'package:flutter_application/widgets/weather_details.dart';
 import 'package:flutter_application/widgets/weather_search_bar.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
   static const String routeName = '/home';
@@ -52,7 +55,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     // Check if the WeatherStatus is loaded from Hydrated Bloc
     if (context.read<WeatherBloc>().state.status == WeatherStatus.loaded) {
       // update the weather at the current user location
-      
+
       context.read<WeatherBloc>().add(FetchWeatherOnAppStartEvent());
     }
     // Else no local storage so fetch the weather information at the current location
@@ -78,6 +81,31 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       return (temp - 32) * 5 / 9;
     }
     return temp;
+  }
+
+  String convertMeasurement(double measurement, MeasurementUnit unit) {
+    if (unit == MeasurementUnit.kilometers) {
+      return ('${(measurement * 1.6).round()} km');
+    }
+    return '${measurement.round()} mi';
+  }
+
+  String adjustEpochForTimeZone(int epoch, String timeZone) {
+    // Load time zone data
+    tz.initializeTimeZones();
+
+    // Convert UTC epoch to DateTime
+    DateTime utcDateTime =
+        DateTime.fromMillisecondsSinceEpoch(epoch * 1000, isUtc: true);
+
+    // Convert to the desired time zone
+    tz.TZDateTime targetDateTime =
+        tz.TZDateTime.from(utcDateTime, tz.getLocation(timeZone));
+
+    // Format the result as a string
+    String formattedTime = DateFormat.jm('en_US').format(targetDateTime);
+
+    return formattedTime;
   }
 
   @override
@@ -114,6 +142,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               } else {
                 final tempUnit =
                     context.watch<TempSettingsCubit>().state.tempUnit;
+                final measurementUnit =
+                    context.watch<TempSettingsCubit>().state.measurementUnit;
                 return RefreshIndicator(
                   onRefresh: _appRefresh,
                   child: Scaffold(
@@ -142,7 +172,23 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                 ),
                               ),
                               const SizedBox(
-                                height: 150,
+                                height: 2,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 12.0,
+                                ),
+                                child: Text(
+                                  state.weather.region,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontFamily: 'MavenPro',
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 148,
                               ),
                               Row(
                                 children: [
@@ -160,16 +206,20 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                       ),
                                     ),
                                   ),
-                                  Baseline(
-                                    baseline: 50.0,
-                                    baselineType: TextBaseline.alphabetic,
-                                    child: Text(
-                                      state.weather.condition,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 30,
-                                        fontFamily: 'MavenPro',
-                                        fontWeight: FontWeight.bold,
+                                  Expanded(
+                                    child: Baseline(
+                                      baseline: 50.0,
+                                      baselineType: TextBaseline.alphabetic,
+                                      child: ClipRect(
+                                        child: Text(
+                                          state.weather.condition,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 30,
+                                            fontFamily: 'MavenPro',
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -226,10 +276,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                 height: 5,
                               ),
                               Padding(
-                                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                padding:
+                                    const EdgeInsets.fromLTRB(10, 0, 10, 0),
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    color: const Color.fromRGBO(149, 92, 209, 1),
+                                    color:
+                                        const Color.fromRGBO(149, 92, 209, 1),
                                     borderRadius: BorderRadius.circular(10.0),
                                     boxShadow: const [
                                       BoxShadow(
@@ -248,17 +300,22 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                   child: ListView.builder(
                                     shrinkWrap: true,
                                     scrollDirection: Axis.horizontal,
-                                    itemCount: 30,
+                                    itemCount: 71,
                                     itemBuilder: (context, index) {
-                                      final hourly = state.weather.hourly[index];
+                                      final hourly =
+                                          state.weather.hourly[index];
                                       final lowerHourBound =
                                           state.weather.localTime - 3600;
                                       final upperHourBound =
                                           state.weather.localTime + (3600 * 24);
-                                      if ((hourly.hourlyTime > lowerHourBound) &&
-                                          (hourly.hourlyTime < upperHourBound)) {
+                                      if ((hourly.hourlyTime >
+                                              lowerHourBound) &&
+                                          (hourly.hourlyTime <
+                                              upperHourBound)) {
                                         return HourlyForecast(
-                                          hourlyTime: hourly.hourlyTime,
+                                          hourlyTime: adjustEpochForTimeZone(
+                                              hourly.hourlyTime,
+                                              state.weather.timezone),
                                           hourlyIcon: hourly.hourlyIcon,
                                           hourlyTemp:
                                               '${convertTemperature(hourly.hourlyTemp, tempUnit).round()}°',
@@ -289,10 +346,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                 scrollDirection: Axis.vertical,
                                 itemCount: state.weather.forecast.length,
                                 itemBuilder: (context, index) {
-                                  final forecast = state.weather.forecast[index];
+                                  final forecast =
+                                      state.weather.forecast[index];
                                   return ThreeDaysForecast(
                                     forecastDay: forecast.forecastDate,
-                                    forecastCondition: forecast.forecastConditon,
+                                    forecastCondition:
+                                        forecast.forecastConditon,
                                     forecastIcon: forecast.forecastIcon,
                                     forcastMinTemp:
                                         '${convertTemperature(forecast.forecastMinTemp, tempUnit).round()}°',
@@ -331,8 +390,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                       detailIcon: Icons.wind_power_outlined,
                                       detailTitle:
                                           '${state.weather.windDirection} wind',
-                                      detailValue:
-                                          '${state.weather.windSpeed.round()} mi/h',
+                                      detailValue: '${convertMeasurement(
+                                        state.weather.windSpeed,
+                                        measurementUnit,
+                                      )}/h',
                                     ),
                                   ),
                                 ],
@@ -354,7 +415,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                     child: WeatherDetails(
                                       detailIcon: Icons.wb_sunny_outlined,
                                       detailTitle: 'UV',
-                                      detailValue: '${state.weather.uv.round()}',
+                                      detailValue:
+                                          '${state.weather.uv.round()}',
                                     ),
                                   ),
                                 ],
@@ -368,8 +430,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                     child: WeatherDetails(
                                       detailIcon: Icons.remove_red_eye_outlined,
                                       detailTitle: 'Visibility',
-                                      detailValue:
-                                          '${state.weather.visibility.round()} mi',
+                                      detailValue: convertMeasurement(
+                                          state.weather.visibility,
+                                          measurementUnit),
                                     ),
                                   ),
                                   Expanded(
