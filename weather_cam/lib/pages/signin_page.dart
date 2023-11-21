@@ -4,6 +4,7 @@ import 'package:flutter_application/blocs/signin/signin_cubit.dart';
 import 'package:flutter_application/pages/signup_page.dart';
 import 'package:flutter_application/utils/error_dialog.dart';
 import 'package:validators/validators.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application/pages/home_page.dart';
 
@@ -52,12 +53,20 @@ class _SigninPage extends State<SigninPage> {
           builder: (context, state) {
             return Scaffold(
                 body: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: const [Color(0xff955cd1), Color(0xff3fa2fa)],
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  stops: const [0.3, 0.85],
+                  colors: [
+                    Color(0xff3fa2fa),
+                    Color(0xFF7F8DA2),
+                    Color(0xFFFD5E53),
+                  ],
+                  stops: [
+                    0.33,
+                    0.66,
+                    0.99,
+                  ], // Adjust stops based on your preference
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
                 ),
               ),
               child: Center(
@@ -144,7 +153,13 @@ class _SigninPage extends State<SigninPage> {
                             ? null
                             : _submit,
                         child: state.signinStatus == SigninStatus.submitting
-                            ? CircularProgressIndicator() // Show loading indicator when submitting
+                            ? Center(
+                                child: LoadingAnimationWidget.twistingDots(
+                                  leftDotColor: Color(0xff3fa2fa),
+                                  rightDotColor: const Color(0xFFFD5E53),
+                                  size: 50,
+                                ),
+                              ) // Show loading indicator when submitting
                             : SizedBox(
                                 width: 100, // Set your desired width
                                 height: 120, // Set your desired height

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 
@@ -138,7 +139,21 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             builder: (context, state) {
               if (state.status == WeatherStatus.loading ||
                   state.status == WeatherStatus.initial) {
-                return const Center(child: CircularProgressIndicator());
+                return   Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset('assets/images/icon2.png',
+                          width: 200, height: 200),
+                      const SizedBox(height: 20),
+                      LoadingAnimationWidget.twistingDots(
+                        leftDotColor: Color(0xff3fa2fa),
+                        rightDotColor: const Color(0xFFFD5E53),
+                        size: 50,
+                      ),
+                    ],
+                  ),
+                );
               } else {
                 final tempUnit =
                     context.watch<TempSettingsCubit>().state.tempUnit;
