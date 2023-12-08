@@ -25,8 +25,6 @@ https://github.com/ResidentTenko/Weather_Cam_Capstone/assets/109637465/7f6b26f8-
 
 <!-- Replace this with whatever GIF tool you used! -->
 GIF created with ... One Plus 8 Screen Recorder
-GIF edited with ... Clip Champ
-GIF compressed with ... freeconvert.com
 ## Notes
 
 
