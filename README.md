@@ -17,7 +17,10 @@ The following functionality is included in the app:
 
 Here's a walkthrough of implemented user stories:
 
-https://user-images.githubusercontent.com/109637465/196073601-691e60e8-9f2a-4090-9546-79b67834ce0d.mp4
+
+https://github.com/ResidentTenko/Weather_Cam_Capstone/assets/109637465/7f6b26f8-8c88-4be4-b385-c6f0bd4360b0
+
+
 
 
 <!-- Replace this with whatever GIF tool you used! -->
