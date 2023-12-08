@@ -18,7 +18,7 @@ The following functionality is included in the app:
 Here's a walkthrough of implemented user stories:
 
 
-https://github.com/ResidentTenko/Weather_Cam_Capstone/assets/109637465/7f6b26f8-8c88-4be4-b385-c6f0bd4360b0
+https://github.com/ResidentTenko/Weather_Cam_Capstone/assets/109637465/0eb2b769-647e-4dcc-97c5-30736ab8ebf2
 
 
 
